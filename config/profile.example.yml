@@ -1,0 +1,80 @@
+# Career-Ops Profile Configuration
+# Copy this file to config/profile.yml and fill in your details.
+# This is the single source of truth for your personal data across all modes.
+
+candidate:
+  full_name: "YOUR_FULL_NAME"
+  email: "you@example.com"
+  phone: "YOUR_PHONE"
+  location: "YOUR_CITY_COUNTRY"
+  linkedin: "https://www.linkedin.com/in/YOUR_HANDLE"
+  portfolio_url: "https://your-portfolio.example.com"
+  github: "https://github.com/YOUR_HANDLE"
+  twitter: "https://x.com/YOUR_HANDLE"
+
+target_roles:
+  # Your North Star roles — what you're optimizing for
+  primary:
+    - "Senior AI Engineer"
+    - "Staff ML Engineer"
+  # Archetypes help the evaluation system score fit
+  archetypes:
+    - name: "AI/ML Engineer"
+      level: "Senior/Staff"
+      fit: "primary"        # primary = dream role, secondary = good fit, adjacent = stretch
+    - name: "AI Product Manager"
+      level: "Senior"
+      fit: "secondary"
+    - name: "Solutions Architect"
+      level: "Mid-Senior"
+      fit: "adjacent"
+
+narrative:
+  # Your professional headline (1 line)
+  headline: "ML Engineer turned AI product builder"
+  # Your exit story — what makes you unique
+  exit_story: "Built and sold my SaaS after 5 years. Now focused on applied AI at scale."
+  # Your top 3-5 superpowers
+  superpowers:
+    - "End-to-end ML pipelines"
+    - "Fast prototyping (idea to prod in 2 weeks)"
+    - "Cross-functional communication"
+  # Proof points — projects, articles, case studies with measurable impact
+  proof_points:
+    - name: "YOUR_PROJECT_NAME"
+      url: "https://your-project.example.com"
+      hero_metric: "YOUR_MEASURABLE_IMPACT"
+    - name: "YOUR_SECOND_PROJECT_NAME"
+      url: "https://github.com/YOUR_HANDLE/YOUR_REPOSITORY"
+      hero_metric: "YOUR_SECOND_MEASURABLE_IMPACT"
+  # Optional: dashboard/demo URL with credentials
+  # dashboard:
+  #   url: "https://your-demo.example.com"
+  #   password: "YOUR_DEMO_PASSWORD"
+
+compensation:
+  target_range: "$150K-200K"     # Your target total comp
+  currency: "USD"
+  minimum: "$120K"               # Walk-away number
+  location_flexibility: "Remote preferred, 1 week/month on-site possible"
+
+location:
+  country: "United States"
+  city: "San Francisco"
+  timezone: "PST"
+  visa_status: "No sponsorship needed"
+  # For remote roles outside your country:
+  # onsite_availability: "1 week/month in any city"
+
+cv:
+  output_format: "html" # "html" (default) or "latex"
+  # (Optional) Canva resume design ID for visual CV generation via /career-ops pdf.
+  # Find it in your Canva design URL: https://www.canva.com/design/DAxxxxxxx/...
+  # The ID starts with "D" and is 11 characters long.
+  # canva_resume_design_id: "DAxxxxxxxxx"
+
+gmail_scan:
+  # Valid job-alert emails to process per run.
+  max_job_alerts_to_process: 5
+  # Unique new job links selected for scraping/evaluation per run.
+  max_job_links_to_process: 50

@@ -1,0 +1,97 @@
+# Personal data (user fills these)
+/cv.md
+data/applications.md
+data/pipeline.md
+data/scan-history.tsv
+reports/*
+!reports/.gitkeep
+!reports/daily/
+reports/daily/*
+!reports/daily/.gitkeep
+output/
+output/*
+!output/.gitkeep
+batch/logs/*
+!batch/logs/.gitkeep
+batch/batch-state.tsv
+batch/batch-input.tsv
+batch/tracker-additions/*
+batch/tracker-additions/**/*.tsv
+!batch/tracker-additions/.gitkeep
+jds/*
+!jds/.gitkeep
+
+# User config and customization (never auto-updated)
+config/profile.yml
+config/master_profile.yml
+config/profile_backup*.yml
+/portals.yml
+modes/_profile.md
+.update-dismissed
+.update-lock
+
+# Secrets (never commit — use .env.example as template)
+.env
+*.env
+/credentials.json
+/token.json
+
+# Generated
+.resolved-prompt-*
+node_modules/
+bun.lock
+__pycache__/
+*.pyc
+.venv/
+.tmp*/
+output/docx-render-temp/
+output/section-e-validation/
+
+# OS
+.DS_Store
+*.mov
+*.mp4
+
+# Claude Code local
+.claude/settings.local.json
+.claude/memory/
+career-dashboard
+package-lock.json
+# Generated career-agent outputs
+data/cv_optimization/
+data/profile_reviews/
+data/resume_objects/
+data/tailored_cvs/
+data/tailoring_intelligence/
+
+# Gmail agent local secrets and runtime files
+apps/gmail-agent/.env
+apps/gmail-agent/*.env
+!apps/gmail-agent/.env.example
+apps/gmail-agent/credentials.json
+apps/gmail-agent/token.json
+data/gmail-agent/*
+data/gmail-agent/setup_state.json
+data/gmail-agent/setup_drafts/
+data/gmail-agent/browser_profiles/
+!data/gmail-agent/.gitkeep
+apps/gmail-agent/logs/
+apps/gmail-agent/.venv/
+apps/gmail-agent/__pycache__/
+apps/gmail-agent/*.pyc
+
+# Local backups / archives
+cv - old.md
+cv - ver-1.md
+cv_backup_phase1.md
+modes/oferta - old.md
+Setup-run.docx
+backup/
+final run/
+reports_before_*_profile_update/
+reports_duplicates/
+reports_old/
+reports_old_spanish/
+
+# Word temp files
+~$*.docx
