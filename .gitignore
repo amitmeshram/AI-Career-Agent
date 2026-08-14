@@ -25,14 +25,17 @@ jds/*
 config/profile.yml
 config/master_profile.yml
 config/profile_backup*.yml
+config/profile.backup.*.yml
 /portals.yml
 modes/_profile.md
+modes/_profile.backup.*.md
 .update-dismissed
 .update-lock
 
 # Secrets (never commit — use .env.example as template)
 .env
 *.env
+!sample-ai-models.env
 /credentials.json
 /token.json
 
