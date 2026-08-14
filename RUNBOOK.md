@@ -1,218 +1,112 @@
-# Production Runbook
+# AI Career Agent Runbook
 
 ## 1. Overview
 
-The consolidated AI Career Agent runs inside Career-Ops and supports daily job discovery, Gmail-based job scanning, manual job description evaluation, report generation, daily CSV summaries, and email summaries.
+AI Career Agent is a local job-search automation tool for Gmail job-alert scanning, manual job-description evaluation, Markdown report generation, executive DOCX CV optimization reporting, and optional email summaries.
 
 Production root:
 
 ```powershell
-D:\Artificial Intelligence\career-ops
+D:\Artificial Intelligence\First-tool-dry-run\final-tool
 ```
 
-Production app path:
+For AI model/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+
+## 2. Daily Run
 
 ```powershell
-D:\Artificial Intelligence\career-ops\apps\gmail-agent
-```
-
-The old `ai-career-agent` repository is a legacy backup only. Daily production usage should happen from the Career-Ops production root.
-
-## 2. Daily Run Procedure
-
-Start PowerShell and run:
-
-```powershell
-cd "D:\Artificial Intelligence\career-ops"
+cd "D:\Artificial Intelligence\First-tool-dry-run\final-tool"
 .\.venv\Scripts\activate
-python apps\gmail-agent\main.py
+python run.py
 ```
 
-In the app menu, choose **Gmail Job Scan**.
+Choose Gmail Job Scan.
 
 Expected behavior:
 
-- The app checks Gmail for job-related messages.
-- Matching jobs are evaluated through the Career-Ops evaluation flow.
-- Career-Ops reports are generated under `reports\`.
+- Gmail job-alert emails are read through OAuth.
+- Job links and email-card metadata are extracted.
+- Accessible job pages are scraped.
+- Blocked pages can be handled through Manual JD Scan.
+- Markdown reports are generated under `reports\`.
 - Executive DOCX reports are generated under `data\cv_optimization\reports\`.
-- A daily CSV summary is written by the Gmail agent under `reports\daily\`.
-- If email delivery is configured and available, the app sends a summary email for the run.
+- Daily summaries are written under `reports\daily\`.
 
-The daily CSV is the operational summary for that run. Use the generated Career-Ops reports for the detailed recommendation, score, and rationale.
+## 3. Manual JD Scan
 
-## 3. Manual JD Scan Procedure
-
-Use **Manual JD Scan** when:
-
-- A job came from LinkedIn, Indeed, a recruiter, or another source outside Gmail.
-- A job page is blocked, expired, or hard to scrape.
-- You want to evaluate a pasted job description before deciding whether to apply.
-
-Run the app:
+Use Manual JD Scan when a portal blocks automation or a JD is available only as pasted text.
 
 ```powershell
-cd "D:\Artificial Intelligence\career-ops"
-.\.venv\Scripts\activate
-python apps\gmail-agent\main.py
+python run.py
 ```
 
-Choose **Manual JD Scan**, paste the full job description when prompted, then submit it according to the app instructions.
-
-Expected output:
-
-- A Career-Ops evaluation report with score, recommendation, fit analysis, and risks.
-- An executive DOCX report when the Career-Ops evaluation path completes.
-- Tracker/report artifacts using the normal Career-Ops conventions.
-
-Manual JD scan feeds the same Career-Ops evaluation logic as the daily scan. Do not create a separate scoring process for pasted JDs.
+Choose Manual JD Scan and paste the full job description.
 
 ## 4. Startup Health Check
 
-At startup, review the health check before running scans.
-
 | Status | Meaning | Action |
 |---|---|---|
-| `Gmail Connection OK` | Gmail credentials and token are usable. | Continue. |
-| `Gmail Connection RECONNECT_REQUIRED` | Gmail token is missing, expired, or revoked. | Run **Reconnect Gmail**. |
-| `LinkedIn Session OK` | Local browser profile is logged in and usable. | Continue. |
-| `LinkedIn Session LOGIN_REQUIRED` | LinkedIn needs a fresh browser login. | Run **Reconnect LinkedIn**. |
-| `Career-Ops Files OK` | Required Career-Ops files are present. | Continue. |
-| `AI Model Connection OK` | AI provider configuration is available. | Continue. |
-| `Output Folders OK` | Runtime output folders exist and are writable. | Continue. |
+| `Gmail Connection OK` | Gmail OAuth files are valid. | Continue. |
+| `Gmail Connection RECONNECT_REQUIRED` | Gmail token is missing, expired, or revoked. | Reconnect Gmail. |
+| `LinkedIn Session OK` | Browser profile is logged in. | Continue. |
+| `LinkedIn Session LOGIN_REQUIRED` | LinkedIn login is required. | Reconnect LinkedIn. |
+| `Project Files OK` | Local project files are present. | Continue. |`r`n| `AI Model Connection OK` | AI provider settings are present. | Continue. |
+| `Output Folders OK` | Runtime folders are writable. | Continue. |
+`r`n
+## 5. AI Provider Configuration
 
-If any status is not OK, fix it before treating the run as production-valid.
-
-## 5. Gmail Reconnect Procedure
-
-Use this when startup reports `Gmail Connection RECONNECT_REQUIRED` or Gmail scanning fails due to authentication.
-
-```powershell
-cd "D:\Artificial Intelligence\career-ops"
-.\.venv\Scripts\activate
-python apps\gmail-agent\main.py
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-Choose **Reconnect Gmail**.
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
 
-Expected behavior:
+## 6. Gmail and LinkedIn Reconnect
 
-- A browser login opens.
-- Sign in to the intended Gmail account.
-- Complete the OAuth consent flow.
-- `apps\gmail-agent\token.json` is created or refreshed locally.
+Run `python run.py`, then choose Reconnect Gmail or Reconnect LinkedIn from the menu. Gmail uses OAuth and LinkedIn uses a local browser profile.
 
-`token.json` is a local secret/runtime file. It must not be committed.
+## 7. Gmail Scan Limits
 
-## 6. LinkedIn Reconnect Procedure
+`config/profile.yml`:
 
-Use this when startup reports `LinkedIn Session LOGIN_REQUIRED` or LinkedIn pages cannot be accessed as expected.
-
-```powershell
-cd "D:\Artificial Intelligence\career-ops"
-.\.venv\Scripts\activate
-python apps\gmail-agent\main.py
+```yaml
+gmail_scan:
+  max_job_alerts_to_process: 5
+  max_job_links_to_process: 45
 ```
 
-Choose **Reconnect LinkedIn**.
+## 8. Optional Email Summary
 
-Expected behavior:
+Use only these variable names if email summaries are configured:
 
-- A browser opens using the app-managed local profile.
-- Log in to LinkedIn manually.
-- Complete any required verification.
-- A local browser profile is created or refreshed under `data\gmail-agent\browser_profiles\`.
-
-Browser profiles are local runtime data. They must not be committed.
-
-## 7. Local Secrets and User Files
-
-These files and folders are local only and must not be committed unless the project explicitly tracks a sanitized template:
-
-- `apps\gmail-agent\.env`
-- `apps\gmail-agent\credentials.json`
-- `apps\gmail-agent\token.json`
-- `data\gmail-agent\`
-- `data\gmail-agent\browser_profiles\`
-- `reports\daily\`
-- `jds\`
-- `cv.md`
-- `config\profile.yml`
-- `modes\_profile.md`
-- `portals.yml`
-
-Do not paste real secrets into documentation, prompts, reports, commits, or issue comments.
-
-## 8. Troubleshooting
-
-| Issue | Likely cause | Fix |
-|---|---|---|
-| Gmail token expired or revoked | OAuth token is no longer valid. | Run **Reconnect Gmail** and confirm `apps\gmail-agent\token.json` is recreated locally. |
-| LinkedIn login required | Browser profile is missing, expired, or logged out. | Run **Reconnect LinkedIn** and complete browser login. |
-| OpenRouter/API key missing | AI provider key is absent from local config. | Check `.env` and add the required local setting. Do not commit it. |
-| Playwright browser missing | Browser binaries were not installed in this environment. | Run `npx playwright install chromium` from the production root. |
-| Email not sent | SMTP/API settings missing, token issue, or provider rejected send. | Check local `.env`, confirm network/provider access, then rerun the scan. |
-| No jobs found | No matching Gmail messages or filters are too narrow. | Confirm Gmail query/filter settings and verify relevant messages exist. |
-| Job blocked by LinkedIn, Indeed, or Cloudflare | Site blocks automation or requires login. | Use **Manual JD Scan** with pasted JD text, or reconnect LinkedIn when appropriate. |
-| Daily report missing score or recommendation | Career-Ops evaluation did not complete cleanly. | Review the generated report, rerun the scan for that job, and check AI model connectivity. |
-| Virtual environment not activated | Python dependencies are unavailable. | Run `.\.venv\Scripts\activate` before `python apps\gmail-agent\main.py`. |
-
-## 9. Production Validation Checklist
-
-Before calling the consolidated setup production-ready, verify:
-
-- [ ] Startup check all OK.
-- [ ] Manual JD scan works.
-- [ ] Gmail scan works.
-- [ ] Career-Ops reports generated.
-- [ ] Executive DOCX generated.
-- [ ] CSV daily summary generated.
-- [ ] Email sent.
-- [ ] Git status clean except ignored local files.
-
-Use:
-
-```powershell
-git status --short
+```env
+EMAIL_SENDER=
+EMAIL_APP_PASSWORD=
+EMAIL_RECEIVER=
 ```
 
-## 10. Rollback Plan
+Do not add Telegram configuration.
 
-Legacy rollback locations:
+## 9. Troubleshooting
 
-```powershell
-D:\Artificial Intelligence\ai-career-agent
-D:\Artificial Intelligence\ai-career-agent-legacy-source.zip
-```
+| Issue | Fix |
+|---|---|
+| Gmail disconnected | Reconnect Gmail from `python run.py`. |
+| LinkedIn login required | Reconnect LinkedIn from `python run.py`. |
+| AI model missing | Check root `.env`. |
+| Job board blocked | Use Manual JD Scan. |
+| Report malformed | Reject it and rerun or review manually. |
+| Tracker issue | Run `npm run verify`. |
 
-If the production app fails and cannot be fixed quickly, run the old repo temporarily from `D:\Artificial Intelligence\ai-career-agent` while the Career-Ops production app is repaired.
+## 10. Private File Safety
 
-Do not delete the old repo or legacy archive until the consolidated production app has completed several successful production runs.
+Never commit `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, `reports/`, `output/`, runtime data, browser sessions, or backup files.
 
-## 11. Git Checkpoint Rules
+## 11. Git Rules
 
-Before any change:
-
-```powershell
-git status --short
-```
-
-After an accepted fix:
-
-```powershell
-git add RUNBOOK.md
-git commit -m "docs: add production runbook"
-```
-
-For stable production milestones:
-
-```powershell
-git tag production-milestone-6
-```
-
-Rules:
-
-- Never commit secrets or runtime data.
-- Never commit `apps\gmail-agent\.env`, `credentials.json`, `token.json`, browser profiles, generated JDs, reports, or runtime data.
-- Commit documentation and accepted code fixes only after reviewing `git status --short`.
-- Tag stable milestones only after validation passes.
+Use scoped staging only. Never use `git add .` in dirty repos.

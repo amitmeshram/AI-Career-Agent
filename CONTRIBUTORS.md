@@ -1,33 +1,24 @@
-# Contributors
+# AI Career Agent Contributors
 
-career-ops exists because of the people who build with it. thank you.
+AI Career Agent is a local customized job-search automation tool maintained in this repository.
 
-## Core Contributors
+## Current Maintainers
 
-Contributors with sustained technical ownership over specific areas. Full authority over content direction within their scope.
+- Amit Meshram - product customization, Gmail job-alert workflow, AI provider setup, Bayt/NaukriGulf testing, and AI Career Agent documentation direction.
 
-- **[@bracketouverte](https://github.com/bracketouverte)** (Michael) — Technical contributor focused on scan mode and ATS research. Running daily support in Discord.
+## Contribution Notes
 
-- **[@piscespieces](https://github.com/piscespieces)** (Andres Urdaneta) — Docs architect. Maintains the getting-started guides at [career-ops-docs.vercel.app](https://career-ops-docs.vercel.app). Shipped [PR #286](https://github.com/santifer/career-ops/pull/286) (portals cleanup). Authored the comparative analysis that defines what career-ops is vs. isn't.
+Contributions should preserve the current workflow:
 
-## Shipping with the project
+- `python run.py`
+- `python run.py --help`
+- `npm run doctor`
+- `npm run verify`
+- `npm run release:audit`
+- `npm run release:package`
 
-- **[@CURT1S03](https://github.com/CURT1S03)** (Curtis) — LaTeX/Overleaf CV export ([PR #362](https://github.com/santifer/career-ops/pull/362), merged — resolves [#47](https://github.com/santifer/career-ops/issues/47))
-- **[@vivek-gite](https://github.com/vivek-gite)** — A16Z provider support ([PR #271](https://github.com/santifer/career-ops/pull/271), in review)
-- **@3fones** — LinkedIn scanner (WIP, paid Claude Max to build on top of the project)
-- **@kennedy58** — Testing alternative inference providers
-- **@kelvan** — Surfaced the token consumption issue that drove the optimization roadmap
+Do not add automation that submits applications automatically. Do not commit private files, generated reports, runtime data, browser sessions, credentials, or backup files.
 
-## Community Guides
+## Upstream Attribution
 
-Members helping newcomers in Discord day-to-day.
-
-- **@mbaku.shogun** — Support in #getting-started
-- **@.ham__.** — Support and onboarding
-- **@banadi** (Mauricio) — Support and onboarding
-- **@systemsyogi** — Support and onboarding
-- **@nafterg** — Community organization suggestions, Discord structure
-
-## How to become a contributor
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Contributor Ladder](GOVERNANCE.md#contributor-ladder) in GOVERNANCE.md. Open an issue first for anything beyond a typo fix — we merge fast when scope is clear.
+AI Career Agent was originally adapted from the open-source Career-Ops project and has been significantly modified. Upstream contributors retain credit for their original project contributions, but they should not be represented as current maintainers of this modified AI Career Agent repository.

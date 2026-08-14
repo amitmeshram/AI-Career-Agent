@@ -1,68 +1,79 @@
-# Gmail Agent Setup
+# Gmail Agent Setup for AI Career Agent
 
-Run these steps from the Career-Ops root folder, not from this subfolder.
+Run these steps from the AI Career Agent project root, not from `apps/gmail-agent`.
 
-## 1. Create private Gmail-agent files
-
-Windows PowerShell:
+## Install Dependencies
 
 ```powershell
-Copy-Item apps\gmail-agent\.env.example apps\gmail-agent\.env
+python -m pip install -r requirements.txt
+python -m pip install -r apps\gmail-agent\requirements.txt
+npx playwright install chromium
 ```
 
-macOS Terminal:
+## AI Provider Setup
 
-```bash
-cp apps/gmail-agent/.env.example apps/gmail-agent/.env
+The root `.env` must include one provider/API key and three model names:
+
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-Fill in local values in `apps/gmail-agent/.env`.
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
 
-## 2. Add Google OAuth credentials
+For screenshots and provider examples, see [AI Model Connection Guidebook.docx](<../../AI Model Connection Guidebook.docx>).
 
-Create a Google OAuth desktop client and save it as:
+## Gmail OAuth
 
-```text
-apps/gmail-agent/credentials.json
-```
+Expected files:
 
-This file is private and must not be shared.
+- `apps/gmail-agent/credentials.json`
+- `apps/gmail-agent/token.json`
 
-## 3. Install dependencies
+AI Career Agent uses OAuth and never needs your Gmail password. Run `python run.py` and choose Reconnect Gmail when needed.
 
-The root setup scripts install these dependencies automatically:
+## LinkedIn Browser Session
 
-Windows PowerShell:
+Run `python run.py` and choose Reconnect LinkedIn if startup reports LinkedIn login required. The browser session is stored under `data/gmail-agent/browser_profiles/`.
+
+## Gmail Job Scan
+
+Run:
 
 ```powershell
-.\setup_windows.ps1
+python run.py
 ```
 
-macOS Terminal:
+Choose Gmail Job Scan. The app reads job alerts, extracts job links, scrapes accessible pages, exports JD Markdown files, runs evaluations, generates Markdown reports, generates executive DOCX reports, builds daily summaries, and optionally sends an email summary.
 
-```bash
-bash setup_macos.sh
+## Gmail Scan Limits
+
+```yaml
+gmail_scan:
+  max_job_alerts_to_process: 5
+  max_job_links_to_process: 45
 ```
 
-Manual install:
+## Manual JD Scan
 
-```bash
-python -m pip install -r apps/gmail-agent/requirements.txt
-python -m playwright install chromium
+Use Manual JD Scan when a portal blocks automation or a job description is available only as pasted text.
+
+## Optional Email Summary Variables
+
+Use only these variable names if email summaries are configured:
+
+```env
+EMAIL_SENDER=
+EMAIL_APP_PASSWORD=
+EMAIL_RECEIVER=
 ```
 
-If a root `wheels/` folder is included:
+Do not add Telegram configuration.
 
-```bash
-python -m pip install --no-index --find-links wheels -r apps/gmail-agent/requirements.txt
-```
+## Private File Safety
 
-## 4. Run
-
-```bash
-python apps/gmail-agent/main.py
-```
-
-Use the startup health-check menu to reconnect Gmail or LinkedIn when needed.
-Gmail tokens and LinkedIn browser profiles are created locally under ignored
-runtime paths and must not be shared.
+Never commit `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, reports, output, runtime data, browser sessions, or backup files.

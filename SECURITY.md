@@ -1,34 +1,27 @@
 # Security Policy
 
-## Reporting a Vulnerability
+AI Career Agent is a local tool that handles sensitive job-search data. Treat the local folder as private.
 
-**Do NOT open a public issue for security vulnerabilities.**
+## Sensitive Files
 
-Instead, please email **hi@santifer.io** with:
+Never commit or share `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, `reports/`, `output/`, `jds/`, `data/gmail-agent/`, browser sessions, or backup files.
 
-1. Description of the vulnerability
-2. Steps to reproduce
-3. Potential impact
-4. Suggested fix (if any)
+## Gmail OAuth
 
-You will receive a response within 72 hours. We will work with you to understand and address the issue before any public disclosure.
+AI Career Agent uses Gmail OAuth. It should never ask for or store your Gmail password. `credentials.json` and `token.json` are local secrets.
 
-## Scope
+## AI Provider Keys
 
-Security issues in the following are in scope:
+Store provider keys only in local `.env` files. `AI_PROVIDER_NAME` is the provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`; it is not the API key name.
 
-- **Scripts** (`*.mjs`) — command injection, path traversal, SSRF
-- **Dashboard** (`dashboard/`) — any Go binary vulnerabilities
-- **Templates** (`templates/`) — XSS in generated HTML/PDF
-- **Configuration** — secrets exposure, unsafe defaults
+## Browser Sessions
 
-## Out of Scope
+LinkedIn and other browser sessions may store cookies or login state under `data/gmail-agent/browser_profiles/`. Treat these folders as secrets.
 
-- Issues in third-party dependencies (report upstream)
-- Issues requiring physical access to the user's machine
-- Social engineering attacks
-- career-ops is a local tool — there is no hosted service to attack
+## Reporting a Security Issue
 
-## Disclosure Policy
+Report security issues to the current repository owner or maintainer through the private channel used for this local project. Do not include live secrets, tokens, CVs, or Gmail data in public messages.
 
-We follow coordinated disclosure. Once a fix is released, we will credit the reporter (unless they prefer anonymity) in the release notes.
+## Safe Git Practice
+
+Use scoped staging only. Never use `git add .` in a dirty repo.

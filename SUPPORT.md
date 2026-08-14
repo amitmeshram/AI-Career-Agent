@@ -1,28 +1,40 @@
-# Getting Help
+# AI Career Agent Support
 
-career-ops is an open source project maintained in limited time. Here's how to get help efficiently.
+AI Career Agent is a local customized job-search automation tool. Support should focus on this repository's current workflow and local files.
 
-## Where to ask
+## Where to Start
 
-| Question type | Where |
+1. Read [README.md](README.md).
+2. Follow [SETUP.md](SETUP.md).
+3. Review [RUNBOOK.md](RUNBOOK.md) for daily operation.
+4. Use [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>) for AI provider and Gmail OAuth setup.
+
+## Common Commands
+
+```powershell
+python run.py
+python run.py --help
+npm run doctor
+npm run verify
+npm run release:audit
+npm run release:package
+```
+
+## Common Issues
+
+| Issue | First check |
 |---|---|
-| **Bug** (something is broken) | [GitHub Issues](https://github.com/santifer/career-ops/issues) — use the Bug Report template |
-| **Feature idea** | [GitHub Issues](https://github.com/santifer/career-ops/issues) — use the Feature Request template |
-| **How do I...?** | [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4) |
-| **Setup help** | Check [docs/SETUP.md](docs/SETUP.md) first, then ask in [Discord](https://discord.gg/8pRpHETxa4) |
-| **Security vulnerability** | Email hi@santifer.io — see [SECURITY.md](SECURITY.md) |
+| Gmail disconnected | Reconnect Gmail from `python run.py`. |
+| LinkedIn login required | Reconnect LinkedIn from `python run.py`. |
+| AI model missing | Check root `.env` provider/key/model settings. |
+| Job board blocked | Use Manual JD Scan with pasted JD text. |
+| Report malformed | Reject it, rerun, or use manual review. |
+| Tracker issue | Run `npm run verify`. |
 
-## Before opening an issue
+## Private Data Reminder
 
-1. Search existing issues — someone may have reported it already
-2. Run `npm run doctor` — it catches most setup problems
-3. Include your OS, Node.js version, and the CLI you're using (Claude Code, OpenCode, etc.)
+Do not paste secrets, tokens, CV content, private reports, or browser-session data into public support channels. Never commit `.env`, credentials, tokens, `cv.md`, `config/profile.yml`, `modes/_profile.md`, reports, output, runtime data, browser sessions, or backup files.
 
-## What NOT to use GitHub Issues for
+## Upstream Attribution
 
-- General questions about job searching
-- Requests for personal career advice
-- Support for modified forks or unofficial distributions
-- Asking the maintainer to review your CV
-
-These will be closed and redirected to the appropriate channel.
+AI Career Agent was originally adapted from the open-source Career-Ops project and has been significantly modified. Upstream community links should not be treated as current support channels for this modified tool.

@@ -1,65 +1,54 @@
-# Codex Setup
+# Codex Setup for AI Career Agent
 
-Career-Ops supports Codex through the root `AGENTS.md` file.
+AI Career Agent supports Codex through the root `AGENTS.md` file. Codex should reuse the checked-in mode files, templates, tracker flow, Gmail-agent code, and scripts that power the local workflow.
 
-If your Codex client reads project instructions automatically, `AGENTS.md`
-is enough for routing and behavior. Codex should reuse the same checked-in
-mode files, templates, tracker flow, and scripts that already power the
-Claude workflow.
-
-## Prerequisites
-
-- A Codex client that can work with project `AGENTS.md`
-- Node.js 18+
-- Playwright Chromium installed for PDF generation and reliable job verification
-- Go 1.21+ if you want the TUI dashboard
+The recommended workflow is `python run.py`, not legacy slash commands.
 
 ## Install
 
 ```bash
 npm install
 npx playwright install chromium
+python -m pip install -r requirements.txt
+python -m pip install -r apps/gmail-agent/requirements.txt
 ```
 
-## Recommended Starting Prompts
+For provider/API key examples and Gmail OAuth setup, see [AI Model Connection Guidebook.docx](<../AI Model Connection Guidebook.docx>).
 
-- `Evaluate this job URL with Career-Ops and run the full pipeline.`
-- `Scan my configured portals for new roles that match my profile.`
-- `Generate the tailored ATS PDF for this role using Career-Ops.`
+## Recommended Commands
+
+```powershell
+python run.py
+python run.py --help
+npm run doctor
+npm run verify
+npm run release:audit
+npm run release:package
+```
 
 ## Routing Map
 
 | User intent | Files Codex should read |
-|-------------|-------------------------|
+|---|---|
 | Raw JD text or job URL | `modes/_shared.md` + `modes/auto-pipeline.md` |
-| Single evaluation only | `modes/_shared.md` + `modes/oferta.md` |
-| Multiple offers | `modes/_shared.md` + `modes/ofertas.md` |
-| Portal scan | `modes/_shared.md` + `modes/scan.md` |
-| PDF generation | `modes/_shared.md` + `modes/pdf.md` |
-| Live application help | `modes/_shared.md` + `modes/apply.md` |
-| Pipeline inbox processing | `modes/_shared.md` + `modes/pipeline.md` |
+| Single evaluation | `modes/_shared.md` + `modes/oferta.md` |
+| Gmail or portal scan | `modes/_shared.md` + `modes/scan.md` |
+| Manual JD Scan | `apps/gmail-agent/SETUP.md` + `modes/oferta.md` |
 | Tracker status | `modes/tracker.md` |
 | Deep company research | `modes/deep.md` |
-| Training / certification review | `modes/training.md` |
-| Project evaluation | `modes/project.md` |
-
-The key point: Codex support is additive. It should route into the existing
-Career-Ops modes and scripts rather than introducing a parallel automation
-layer.
 
 ## Behavioral Rules
 
-- Treat raw JD text or a job URL as the full auto-pipeline path unless the user explicitly asks for evaluation only.
-- Keep all personalization in `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, or `portals.yml`.
-- Never verify a job’s live status with generic web fetch when Playwright is available.
-- Never submit an application for the user.
-- Never add new tracker rows directly to `data/applications.md`; use the TSV addition flow and `merge-tracker.mjs`.
+- Never submit applications automatically.
+- Never invent CV facts, tools, certifications, metrics, domain experience, employers, or achievements.
+- Reject malformed AI model output.
+- If model output contains fake tool-call JSON such as `{"tool":"read"}`, do not save it as a valid report.
+- Keep personalization in `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, or `portals.yml`.
+- Use Playwright for live job verification when available.
+- Use Manual JD Scan when pages are blocked.
+- Never add new tracker rows directly to `data/applications.md`; use TSV additions and `merge-tracker.mjs`.
+- Use scoped `git add <specific-files>` only. Never use `git add .` in dirty repos.
 
-## Verification
+## Private File Safety
 
-```bash
-npm run verify
-
-# optional dashboard build
-cd dashboard && go build ./...
-```
+Never commit `.env`, credentials, tokens, `cv.md`, `config/profile.yml`, `modes/_profile.md`, reports, output, runtime data, browser sessions, or backup files.

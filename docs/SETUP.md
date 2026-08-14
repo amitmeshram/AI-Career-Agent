@@ -1,80 +1,98 @@
-# Setup Guide
+# AI Career Agent Setup Guide
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) installed and configured
-- Node.js 18+ (for PDF generation and utility scripts)
-- (Optional) Go 1.21+ (for the dashboard TUI)
+- Node.js 18+
+- Python 3.10+
+- Playwright Chromium
+- Optional: Go 1.21+ for the dashboard
 
-## Quick Start (5 steps)
+## Quick Start
 
-### 1. Clone and install
+Windows:
 
-```bash
-git clone https://github.com/santifer/career-ops.git
-cd career-ops
-npm install
-npx playwright install chromium   # Required for PDF generation
+```powershell
+.\setup_windows.ps1
+python run.py
 ```
 
-### 2. Configure your profile
+macOS:
+
+```bash
+bash setup_macos.sh
+python run.py
+```
+
+For command help:
+
+```bash
+python run.py --help
+```
+
+## Configure Local Files
 
 ```bash
 cp config/profile.example.yml config/profile.yml
-```
-
-Edit `config/profile.yml` with your personal details: name, email, target roles, narrative, proof points.
-
-### 3. Add your CV
-
-Create `cv.md` in the project root with your full CV in markdown format. This is the source of truth for all evaluations and PDFs.
-
-(Optional) Create `article-digest.md` with proof points from your portfolio projects/articles.
-
-### 4. Configure portals
-
-```bash
 cp templates/portals.example.yml portals.yml
+cp .env.example .env
+cp modes/_profile.template.md modes/_profile.md
+cp apps/gmail-agent/.env.example apps/gmail-agent/.env
 ```
 
-Edit `portals.yml`:
-- Update `title_filter.positive` with keywords matching your target roles
-- Add companies you want to track in `tracked_companies`
-- Customize `search_queries` for your preferred job boards
+Create `cv.md` in the project root with your full CV in Markdown.
 
-### 5. Start using
+For AI model/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<../AI Model Connection Guidebook.docx>).
 
-Open Claude Code in this directory:
+## AI Provider Setup
+
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
+```
+
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+
+## Gmail OAuth Setup
+
+AI Career Agent uses Gmail OAuth to read job-alert emails.
+
+1. Create or select a Google Cloud project.
+2. Enable the Gmail API.
+3. Configure an OAuth consent screen.
+4. Create a Desktop OAuth client.
+5. Download the JSON file as `apps/gmail-agent/credentials.json`.
+6. Run `python run.py` and choose Reconnect Gmail when prompted.
+
+The generated `apps/gmail-agent/token.json` is private and must not be committed.
+
+## LinkedIn Browser Login
+
+Run `python run.py` and choose Reconnect LinkedIn when startup reports login required. Browser sessions are stored under `data/gmail-agent/browser_profiles/`.
+
+## Gmail Scan Limits
+
+```yaml
+gmail_scan:
+  max_job_alerts_to_process: 5
+  max_job_links_to_process: 45
+```
+
+## Manual JD Scan
+
+Use Manual JD Scan for blocked sites, recruiter emails, copied job descriptions, or job boards that do not scrape reliably.
+
+## Validate
 
 ```bash
-claude
+npm run doctor
+npm run verify
+python run.py --help
 ```
 
-Then paste a job offer URL or description. Career-ops will automatically evaluate it, generate a report, create a tailored PDF, and track it.
+## Private File Safety
 
-## Available Commands
-
-| Action | How |
-|--------|-----|
-| Evaluate an offer | Paste a URL or JD text |
-| Search for offers | `/career-ops scan` |
-| Process pending URLs | `/career-ops pipeline` |
-| Generate a PDF | `/career-ops pdf` |
-| Batch evaluate | `/career-ops batch` |
-| Check tracker status | `/career-ops tracker` |
-| Fill application form | `/career-ops apply` |
-
-## Verify Setup
-
-```bash
-node cv-sync-check.mjs      # Check configuration
-node verify-pipeline.mjs     # Check pipeline integrity
-```
-
-## Build Dashboard (Optional)
-
-```bash
-cd dashboard
-go build -o career-dashboard .
-./career-dashboard --path ..  # Opens TUI pipeline viewer
-```
+Never commit `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, `reports/`, `output/`, runtime data, browser sessions, or backup files.

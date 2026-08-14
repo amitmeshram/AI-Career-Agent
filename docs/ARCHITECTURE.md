@@ -1,110 +1,95 @@
-# Architecture
+# AI Career Agent Architecture
 
-## System Overview
+AI Career Agent is a local job-search automation system. It combines Gmail job-alert ingestion, browser-based job-page scraping, manual JD capture, AI evaluation, report generation, executive DOCX CV optimization reporting, and tracker integrity checks.
 
-```
-                    ┌─────────────────────────────────┐
-                    │         Claude Code Agent        │
-                    │   (reads CLAUDE.md + modes/*.md) │
-                    └──────────┬──────────────────────┘
-                               │
-            ┌──────────────────┼──────────────────────┐
-            │                  │                       │
-     ┌──────▼──────┐   ┌──────▼──────┐   ┌───────────▼────────┐
-     │ Single Eval  │   │ Portal Scan │   │   Batch Process    │
-     │ (auto-pipe)  │   │  (scan.md)  │   │   (batch-runner)   │
-     └──────┬──────┘   └──────┬──────┘   └───────────┬────────┘
-            │                  │                       │
-            │           ┌──────▼──────┐          ┌────▼─────┐
-            │           │ pipeline.md │          │ N workers│
-            │           │ (URL inbox) │          │ (claude -p)
-            │           └─────────────┘          └────┬─────┘
-            │                                          │
-     ┌──────▼──────────────────────────────────────────▼──────┐
-     │                    Output Pipeline                      │
-     │  ┌──────────┐  ┌────────────┐  ┌───────────────────┐  │
-     │  │ Report.md│  │  PDF (HTML  │  │ Tracker TSV       │  │
-     │  │ (A-F eval)│  │  → Puppeteer)│  │ (merge-tracker)  │  │
-     │  └──────────┘  └────────────┘  └───────────────────┘  │
-     └────────────────────────────────────────────────────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  data/applications.md │
-                    │  (canonical tracker)  │
-                    └──────────────────────┘
+## Runtime Entry Point
+
+The recommended entrypoint is:
+
+```powershell
+python run.py
 ```
 
-## Evaluation Flow (Single Offer)
+`python run.py --help` shows available local actions.
 
-1. **Input**: User pastes JD text or URL
-2. **Extract**: Playwright/WebFetch extracts JD from URL
-3. **Classify**: Detect archetype (1 of 6 types)
-4. **Evaluate**: 6 blocks (A-F):
-   - A: Role summary
-   - B: CV match (gaps + mitigation)
-   - C: Level strategy
-   - D: Comp research (WebSearch)
-   - E: CV personalization plan
-   - F: Interview prep (STAR stories)
-5. **Score**: Weighted average across 10 dimensions (1-5)
-6. **Report**: Save as `reports/{num}-{company}-{date}.md`
-7. **PDF**: Generate ATS-optimized CV (`generate-pdf.mjs`)
-8. **Track**: Write TSV to `batch/tracker-additions/`, auto-merged
+## Main Components
 
-## Batch Processing
-
-The batch system processes multiple offers in parallel:
-
-```
-batch-input.tsv    →  batch-runner.sh  →  N × claude -p workers
-(id, url, source)     (orchestrator)       (self-contained prompt)
-                           │
-                    batch-state.tsv
-                    (tracks progress)
-```
-
-Each worker is a headless Claude instance (`claude -p`) that receives the full `batch-prompt.md` as context. Workers produce:
-- Report .md
-- PDF
-- Tracker TSV line
-
-The orchestrator manages parallelism, state, retries, and resume.
+| Component | Responsibility |
+|---|---|
+| `run.py` | Guided local entrypoint for setup, scans, manual input, and app workflows. |
+| `apps/gmail-agent/` | Gmail OAuth, job-alert parsing, job-link extraction, scraping orchestration, daily summaries. |
+| `cv.md` | Canonical CV source. |
+| `config/profile.yml` | User profile, target roles, compensation, preferences, and Gmail scan limits. |
+| `modes/_profile.md` | Long-form user-specific context. |
+| `modes/` | Evaluation and workflow instructions reused by agents. |
+| `tools/` | CV optimization and executive DOCX report generation helpers. |
+| `reports/` | Markdown evaluation outputs. |
+| `data/cv_optimization/reports/` | Executive DOCX reports. |
+| `data/gmail-agent/` | Runtime Gmail-agent state, browser profiles, and caches. |
+| `templates/` | CV, portal, and status templates. |
 
 ## Data Flow
 
+```text
+Gmail OAuth or Manual JD
+        |
+        v
+Job links and metadata
+        |
+        v
+Playwright scrape or manual JD fallback
+        |
+        v
+JD Markdown export
+        |
+        v
+AI evaluation against cv.md + config/profile.yml
+        |
+        v
+Markdown report + executive DOCX report
+        |
+        v
+Tracker TSV merge and daily summary
 ```
-cv.md                    →  Evaluation context
-article-digest.md        →  Proof points for matching
-config/profile.yml       →  Candidate identity
-portals.yml              →  Scanner configuration
-templates/states.yml     →  Canonical status values
-templates/cv-template.html → PDF generation template
+
+## AI Provider Layer
+
+AI Career Agent uses one provider/API key and three model names from `.env`:
+
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-## File Naming Conventions
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
 
-- Reports: `{###}-{company-slug}-{YYYY-MM-DD}.md` (3-digit zero-padded)
-- PDFs: `cv-candidate-{company-slug}-{YYYY-MM-DD}.pdf`
-- Tracker TSVs: `batch/tracker-additions/{id}.tsv`
+Malformed model output must be rejected. Fake tool-call JSON such as `{"tool":"read"}` is not a valid report.
 
-## Pipeline Integrity
+## Gmail and Browser Layer
 
-Scripts maintain data consistency:
+Gmail uses OAuth files under `apps/gmail-agent/`:
 
-| Script | Purpose |
-|--------|---------|
-| `merge-tracker.mjs` | Merges batch TSV additions into applications.md |
-| `verify-pipeline.mjs` | Health check: statuses, duplicates, links |
-| `dedup-tracker.mjs` | Removes duplicate entries by company+role |
-| `normalize-statuses.mjs` | Maps status aliases to canonical values |
-| `cv-sync-check.mjs` | Validates setup consistency |
+- `credentials.json`
+- `token.json`
 
-## Dashboard TUI
+LinkedIn and other browser sessions use local profiles under `data/gmail-agent/browser_profiles/`.
 
-The `dashboard/` directory contains a standalone Go TUI application that visualizes the pipeline:
+## Manual JD Fallback
 
-- Filter tabs: All, Evaluada, Aplicado, Entrevista, Top >=4, No Aplicar
-- Sort modes: Score, Date, Company, Status
-- Grouped/flat view
-- Lazy-loaded report previews
-- Inline status picker
+Some portals block automation or return protocol/security errors. Manual JD Scan is the supported fallback: paste the full JD and evaluate from that captured text.
+
+## Tracker Integrity
+
+New tracker rows should flow through TSV additions and `merge-tracker.mjs`. Do not add new entries directly to `data/applications.md`.
+
+## Private Data Boundary
+
+Never commit `.env`, credentials, tokens, `cv.md`, `config/profile.yml`, `modes/_profile.md`, reports, output, runtime data, browser sessions, or backup files.
+
+## Upstream Attribution
+
+AI Career Agent was originally adapted from the open-source Career-Ops project and has been significantly modified.

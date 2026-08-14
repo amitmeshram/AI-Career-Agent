@@ -1,76 +1,43 @@
-# Customization Guide
+# AI Career Agent Customization
 
-## Profile (config/profile.yml)
+Customize AI Career Agent through user-layer files, not shared system defaults.
 
-This is the single source of truth for your identity. All modes read from here.
+## User-Layer Files
 
-Key sections:
-- **candidate**: Name, email, phone, location, LinkedIn, portfolio
-- **target_roles**: Your North Star roles and archetypes
-- **narrative**: Your headline, exit story, superpowers, proof points
-- **compensation**: Target range, minimum, currency
-- **location**: Country, timezone, visa status, on-site availability
+- `cv.md` - canonical CV.
+- `config/profile.yml` - target roles, compensation, location, preferences, and Gmail scan limits.
+- `modes/_profile.md` - long-form user-specific context and scoring preferences.
+- `article-digest.md` - proof points from projects, articles, or achievements.
+- `portals.yml` - portal and company scanning configuration.
 
-## Target Roles (modes/_profile.md)
+## Common Customizations
 
-The archetype table in `_profile.md` determines how offers are scored and CVs are framed. Edit the table to match YOUR career targets:
+| Request | Where to edit |
+|---|---|
+| Target roles | `config/profile.yml`, `modes/_profile.md` |
+| Salary range | `config/profile.yml` |
+| Deal-breakers | `config/profile.yml`, `modes/_profile.md` |
+| Proof points | `article-digest.md` |
+| Gmail scan limits | `config/profile.yml` |
+| Portal/company filters | `portals.yml` |
 
-```markdown
-| Archetype | Thematic axes | What they buy |
-|-----------|---------------|---------------|
-| **Your Role 1** | key skills | what they need |
-| **Your Role 2** | key skills | what they need |
+## AI Provider
+
+Root `.env` uses one provider/API key and three model names:
+
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-Also update the "Adaptive Framing" table to map YOUR specific projects to each archetype.
+`AI_PROVIDER_NAME` means provider name, not API key name.
 
-## Portals (portals.yml)
+## Rules
 
-Copy from `templates/portals.example.yml` and customize:
-
-1. **title_filter.positive**: Keywords matching your target roles
-2. **title_filter.negative**: Tech stacks or domains to exclude
-3. **search_queries**: WebSearch queries for job boards (Ashby, Greenhouse, Lever)
-4. **tracked_companies**: Companies to check directly
-
-## CV Template (templates/cv-template.html)
-
-The HTML template uses these design tokens:
-- **Fonts**: Space Grotesk (headings) + DM Sans (body) -- self-hosted in `fonts/`
-- **Colors**: Cyan primary (`hsl(187,74%,32%)`) + Purple accent (`hsl(270,70%,45%)`)
-- **Layout**: Single-column, ATS-optimized
-
-To customize fonts/colors, edit the CSS in the template. Update font files in `fonts/` if switching fonts.
-
-## Negotiation Scripts (modes/_shared.md)
-
-The negotiation section provides frameworks for salary discussions. Replace the example scripts with your own:
-- Target ranges
-- Geographic arbitrage strategy
-- Pushback responses
-
-## Hooks (Optional)
-
-Career-ops can integrate with external systems via Claude Code hooks. Example hooks:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [{
-      "hooks": [{
-        "type": "command",
-        "command": "echo 'Career-ops session started'"
-      }]
-    }]
-  }
-}
-```
-
-Save hooks in `.claude/settings.json`.
-
-## States (templates/states.yml)
-
-The canonical states rarely need changing. If you add new states, update:
-1. `templates/states.yml`
-2. `normalize-statuses.mjs` (alias mappings)
-3. `modes/_shared.md` (any references)
+- Do not put user-specific content in `modes/_shared.md`.
+- Do not invent CV facts, tools, certifications, metrics, or domain experience.
+- Do not submit applications automatically.
+- Do not commit private files, reports, output, runtime data, browser sessions, or backup files.

@@ -1,72 +1,39 @@
-# Legal Disclaimer & Acceptable Use
+# AI Career Agent Legal Disclaimer
 
-## 1. Nature of the Project
+AI Career Agent is a local software tool for job-search organization, job-description evaluation, CV tailoring support, report generation, and workflow tracking. It is not a hosted service and does not submit applications for the user.
 
-`career-ops` is a collection of Markdown prompts, Node.js scripts, and HTML templates. It is strictly a local execution tool. The maintainers do not host, deploy, or operate an AI system, nor do we provide API access to Large Language Models (LLMs).
+## No Employment Advice Guarantee
 
-Users download the code, run it on their own machines, and connect it to their own AI provider (Anthropic, OpenAI, or any other). The maintainers have no visibility into, control over, or responsibility for how the tool is used after download.
+AI Career Agent provides automated analysis and recommendations. Outputs may be incomplete, inaccurate, outdated, or affected by AI model errors. You are responsible for reviewing all reports, CV changes, application answers, and recommendations before using them.
 
-## 2. Data Privacy (GDPR)
+## User Responsibility
 
-The maintainers do not act as a Data Controller or Data Processor under GDPR or any other data protection regulation.
+You are responsible for deciding whether to apply, reviewing generated materials, complying with job-board and employer terms, keeping credentials private, and confirming that your CV and application materials are accurate.
 
-- All Personal Identifiable Information (PII) you input — CVs, contact details, career history — is processed locally on your machine.
-- When you use an AI CLI tool (Claude Code, Codex, OpenCode), your data is sent directly to the AI provider you chose. Review their privacy policies.
-- We do not collect analytics, telemetry, or usage data of any kind.
-- API keys, credentials, and personal files are gitignored by default. Never commit them to a public fork.
+Do not use AI Career Agent to spam employers or submit low-quality mass applications.
 
-## 3. AI Model Behavior
+## No Automatic Submission
 
-This tool interfaces with AI models via third-party CLI tools. The maintainers do not control these models and cannot guarantee their behavior.
+AI Career Agent must stop before any final Submit, Send, Apply, or equivalent action. The user makes the final application decision.
 
-- **Hallucinations:** AI models may fabricate skills, job history, qualifications, or company information. You must manually verify all generated documents before submitting them to an employer.
-- **Safety guardrails:** The default prompts instruct the AI never to auto-submit applications and to stop before the final send/apply action. However, AI compliance is not guaranteed. If you use different models, modify the system prompts, or override the safety instructions, you accept full responsibility for the AI's actions.
-- **Evaluation accuracy:** Job offer scores and recommendations are AI-generated opinions based on pattern matching, not professional career advice. They should inform your judgment, not replace it.
+## AI Provider and Data Handling
 
-## 4. Third-Party Platforms
+The tool may send job descriptions, CV content, profile details, or related context to the AI provider configured in `.env`. Review your provider's privacy and retention terms before use.
 
-career-ops interacts with career portals and job boards (Greenhouse, Lever, Ashby, Workday, and others).
+`AI_PROVIDER_NAME` identifies the provider, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It is not an API key name.
 
-- Users must comply with the Terms of Service of every platform they interact with.
-- Do not use this tool to scrape platforms that prohibit automated access.
-- Do not use this tool to spam employers, overwhelm ATS systems, or submit mass applications.
-- Any consequences from ToS violations — including IP bans, account restrictions, or legal action from platforms — are solely the responsibility of the user.
-- The maintainers actively reject contributions that facilitate ToS violations (see CONTRIBUTING.md).
+## Third-Party Sites
 
-## 5. Acceptable Use
+AI Career Agent can interact with Gmail, LinkedIn, job boards, ATS platforms, and employer sites. You are responsible for using the tool in accordance with those services' terms. Some sites may block automation or require login; use Manual JD Scan when automated scraping is not reliable.
 
-career-ops is designed to help individuals make better career decisions, not to automate away human judgment. Acceptable use includes:
+## Private Files
 
-- Evaluating job offers to prioritize your time
-- Generating tailored CVs that you review and edit before submitting
-- Scanning public career pages for open positions
-- Tracking your application pipeline
+Never commit or share `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, `reports/`, `output/`, runtime data, browser sessions, or backup files.
 
-Unacceptable use includes:
+## No Warranty
 
-- Auto-submitting applications without human review
-- Scraping platforms that prohibit automated access
-- Submitting AI-generated content without verifying its accuracy
-- Using the tool to discriminate, deceive, or misrepresent qualifications
+AI Career Agent is provided as-is, without warranty of any kind.
 
-## 6. EU AI Act
+## Upstream Attribution
 
-Because this tool runs locally, is free, and is open-source, the maintainers are not placing an AI system on the market or putting one into service under the EU AI Act. Users who deploy the tool in a commercial or organizational context should assess their own obligations under the AI Act.
-
-## 7. Indemnification
-
-By using career-ops, you agree to indemnify, defend, and hold harmless the authors, contributors, and any affiliated parties from and against any and all claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising from your use of this software, your violation of these terms, or your violation of any third-party terms of service.
-
-## 8. Cost Responsibility
-
-If you use paid AI providers (Anthropic API, OpenAI API, etc.), you are solely responsible for monitoring and managing your own token usage and associated costs. The maintainers are not responsible for unexpected charges.
-
-## 9. MIT License
-
-As stated in the [LICENSE](LICENSE) file:
-
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## 10. Changes
-
-This disclaimer may be updated as the project evolves. Users are encouraged to review it periodically.
+AI Career Agent was originally adapted from the open-source Career-Ops project and has been significantly modified. This attribution does not imply upstream maintainers operate or support this modified tool.

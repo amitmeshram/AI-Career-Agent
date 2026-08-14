@@ -1,33 +1,32 @@
-# Setup
+# AI Career Agent Setup
 
 Run these commands from the folder that contains `package.json` and `run.py`.
 
-## 1. Install prerequisites
+## 1. Install Prerequisites
 
 - Node.js 18+
 - Python 3.10+
 - PowerShell on Windows or Terminal on macOS
+- Playwright Chromium
 - Optional: Go 1.21+ for the dashboard
 
-## 2. Run one-command setup
+## 2. Run One-Command Setup
 
-Windows PowerShell:
+Windows:
 
 ```powershell
 .\setup_windows.ps1
 ```
 
-macOS Terminal:
+macOS:
 
 ```bash
 bash setup_macos.sh
 ```
 
-These scripts create `.venv`, install Python and Node dependencies, install
-Playwright Chromium, create missing local config files from templates, and run
-basic validation.
+These scripts create `.venv`, install dependencies, install Playwright Chromium, create missing local files from templates, and run basic validation.
 
-## 3. Manual dependency install
+## 3. Manual Install
 
 ```bash
 npm install
@@ -36,15 +35,7 @@ python -m pip install -r requirements.txt
 python -m pip install -r apps/gmail-agent/requirements.txt
 ```
 
-If a `wheels/` folder is included, Python packages can be installed offline:
-
-```bash
-python -m pip install --no-index --find-links wheels -r requirements.txt
-```
-
-## 4. Create private local files
-
-Windows PowerShell:
+## 4. Create Private Files
 
 ```powershell
 Copy-Item config\profile.example.yml config\profile.yml
@@ -54,30 +45,73 @@ Copy-Item modes\_profile.template.md modes\_profile.md
 Copy-Item apps\gmail-agent\.env.example apps\gmail-agent\.env
 ```
 
-macOS Terminal:
-
-```bash
-cp config/profile.example.yml config/profile.yml
-cp templates/portals.example.yml portals.yml
-cp .env.example .env
-cp modes/_profile.template.md modes/_profile.md
-cp apps/gmail-agent/.env.example apps/gmail-agent/.env
-```
-
 Then create `cv.md` with your CV in Markdown.
 
-## 5. Validate
+## 5. AI Provider Setup
 
-```bash
-npm run doctor
-python run.py --help
+Root `.env` should contain:
+
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-## 6. Start
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
 
-```bash
+For provider examples and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+
+## 6. Gmail OAuth
+
+AI Career Agent reads Gmail job alerts through Google OAuth. It does not use your Gmail password.
+
+Expected files:
+
+- `apps/gmail-agent/credentials.json`
+- `apps/gmail-agent/token.json`
+
+Run `python run.py` and choose Reconnect Gmail if the startup check reports Gmail needs attention.
+
+## 7. LinkedIn Browser Login
+
+LinkedIn uses a local browser profile under `data/gmail-agent/browser_profiles/`. Run `python run.py` and choose Reconnect LinkedIn if startup reports login required.
+
+## 8. Manual JD Scan
+
+Use Manual JD Scan when a job page is blocked, expired, behind a challenge, or available only as pasted text.
+
+```powershell
 python run.py
 ```
 
-Never share `.env`, `cv.md`, `config/profile.yml`, `portals.yml`, Gmail tokens,
-LinkedIn browser profiles, generated job descriptions under `jds/`, Gmail scanner state under `data/gmail-agent/`, reports, or outputs.
+## 9. Gmail Scan Limits
+
+Configure limits in `config/profile.yml`:
+
+```yaml
+gmail_scan:
+  max_job_alerts_to_process: 5
+  max_job_links_to_process: 45
+```
+
+## 10. Validate
+
+```bash
+npm run doctor
+npm run verify
+python run.py --help
+```
+
+Release-package checks:
+
+```bash
+npm run release:audit
+npm run release:package
+```
+
+## 11. Private File Safety
+
+Never commit `.env`, `credentials.json`, `token.json`, `cv.md`, `config/profile.yml`, `modes/_profile.md`, `reports/`, `output/`, runtime data, browser sessions, or backup files.

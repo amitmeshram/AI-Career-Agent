@@ -1,456 +1,159 @@
-# Career-Ops
+# AI Career Agent
 
-[English](README.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [한국어](README.ko-KR.md) | [日本語](README.ja.md) | [Русский](README.ru.md) | [简体中文](README.cn.md) | [繁體中文](README.zh-TW.md)
+AI Career Agent is a local job-search automation tool for controlled, review-first job search work from your own machine.
 
-<p align="center">
-  <a href="https://x.com/santifer"><img src="docs/hero-banner.jpg" alt="Career-Ops — Multi-Agent Job Search System" width="800"></a>
-</p>
+It can:
 
-<p align="center">
-  <em>I spent months applying to jobs the hard way. So I engineered the system I wish I had.</em><br>
-  Companies use AI to filter candidates. <strong>I just gave candidates AI to <em>choose</em> companies.</strong><br>
-  <em>Now it's open source.</em>
-</p>
+- scan Gmail job-alert emails through Gmail OAuth,
+- use a local LinkedIn browser session for LinkedIn job pages,
+- support Manual JD Scan when a portal blocks automation,
+- evaluate job descriptions against `cv.md` and `config/profile.yml`,
+- generate Markdown evaluation reports under `reports/`,
+- generate executive DOCX CV optimization reports under `data/cv_optimization/reports/`,
+- maintain a local application tracker,
+- use one AI provider key with three model names,
+- send optional email summaries when configured.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code-000?style=flat&logo=anthropic&logoColor=white" alt="Claude Code">
-  <img src="https://img.shields.io/badge/OpenCode-111827?style=flat&logo=terminal&logoColor=white" alt="OpenCode">
-  <img src="https://img.shields.io/badge/Gemini_CLI-4285F4?style=flat&logo=google&logoColor=white" alt="Gemini CLI">
-  <img src="https://img.shields.io/badge/Codex-111827?style=flat&logo=openai&logoColor=white" alt="Codex">
-  <img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white" alt="Go">
-  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=flat&logo=playwright&logoColor=white" alt="Playwright">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT">
-  <a href="https://discord.gg/8pRpHETxa4"><img src="https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Discord"></a>
-  <br>
-  <img src="https://img.shields.io/badge/EN-blue?style=flat" alt="EN">
-  <img src="https://img.shields.io/badge/ES-red?style=flat" alt="ES">
-  <img src="https://img.shields.io/badge/DE-grey?style=flat" alt="DE">
-  <img src="https://img.shields.io/badge/FR-blue?style=flat" alt="FR">
-  <img src="https://img.shields.io/badge/PT--BR-green?style=flat" alt="PT-BR">
-  <img src="https://img.shields.io/badge/KO-white?style=flat" alt="KO">
-  <img src="https://img.shields.io/badge/JA-red?style=flat" alt="JA">
-  <img src="https://img.shields.io/badge/ZH--CN-red?style=flat" alt="ZH-CN">
-  <img src="https://img.shields.io/badge/ZH--TW-blue?style=flat" alt="ZH-TW">
-</p>
+AI Career Agent never submits applications automatically. The user always makes the final application decision.
 
----
+## Recommended Workflow
 
-<p align="center">
-  <img src="docs/demo.gif" alt="Career-Ops Demo" width="800">
-</p>
-
-<p align="center"><strong>740+ job listings evaluated · 100+ personalized CVs · 1 dream role landed</strong></p>
-
-<p align="center"><a href="https://discord.gg/8pRpHETxa4"><img src="https://img.shields.io/badge/Join_the_community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a></p>
-
-## What Is This
-
-Career-Ops turns any AI coding CLI into a full job search command center. Instead of manually tracking applications in a spreadsheet, you get an AI-powered pipeline that:
-
-- **Evaluates offers** with a structured A-F scoring system (10 weighted dimensions)
-- **Generates tailored PDFs** -- ATS-optimized CVs customized per job description
-- **Scans portals** automatically (Greenhouse, Ashby, Lever, company pages)
-- **Processes in batch** -- evaluate 10+ offers in parallel with sub-agents
-- **Tracks everything** in a single source of truth with integrity checks
-
-> **Important: This is NOT a spray-and-pray tool.** Career-ops is a filter -- it helps you find the few offers worth your time out of hundreds. The system strongly recommends against applying to anything scoring below 4.0/5. Your time is valuable, and so is the recruiter's. Always review before submitting.
-
-Career-ops is agentic: Claude Code navigates career pages with Playwright, evaluates fit by reasoning about your CV vs the job description (not keyword matching), and adapts your resume per listing.
-
-> **Heads up: the first evaluations won't be great.** The system doesn't know you yet. Feed it context -- your CV, your career story, your proof points, your preferences, what you're good at, what you want to avoid. The more you nurture it, the better it gets. Think of it as onboarding a new recruiter: the first week they need to learn about you, then they become invaluable.
-
-Built by someone who used it to evaluate 740+ job offers, generate 100+ tailored CVs, and land a Head of Applied AI role. [Read the full case study](https://santifer.io/career-ops-system).
-
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| **Auto-Pipeline** | Paste a URL, get a full evaluation + PDF + tracker entry |
-| **6-Block Evaluation** | Role summary, CV match, level strategy, comp research, personalization, interview prep (STAR+R) |
-| **Interview Story Bank** | Accumulates STAR+Reflection stories across evaluations -- 5-10 master stories that answer any behavioral question |
-| **Negotiation Scripts** | Salary negotiation frameworks, geographic discount pushback, competing offer leverage |
-| **ATS PDF Generation** | Keyword-injected CVs with Space Grotesk + DM Sans design |
-| **Portal Scanner** | 45+ companies pre-configured (Anthropic, OpenAI, ElevenLabs, Retool, n8n...) + custom queries across Ashby, Greenhouse, Lever, Wellfound |
-| **Batch Processing** | Parallel evaluation with `claude -p` workers |
-| **Dashboard TUI** | Terminal UI to browse, filter, and sort your pipeline |
-| **Human-in-the-Loop** | AI evaluates and recommends, you decide and act. The system never submits an application -- you always have the final call |
-| **Pipeline Integrity** | Automated merge, dedup, status normalization, health checks |
-
-## First-Time Setup
-
-This folder is a clean production copy. It intentionally does not include your CV,
-profile, portal list, job descriptions, reports, API keys, Gmail tokens, LinkedIn
-browser sessions, or generated outputs.
-
-### 1. Install prerequisites
-
-Install these first:
-
-- Node.js 18 or newer
-- Python 3.10 or newer
-- A terminal: PowerShell on Windows, Terminal on macOS
-- Optional: Go 1.21 or newer, only for the dashboard TUI
-
-### 2. Open this folder
-
-Windows PowerShell:
+Run the local app from the project root:
 
 ```powershell
-cd "PATH\TO\career-ops"
+python run.py
 ```
 
-macOS Terminal:
+Help and validation:
 
-```bash
-cd "/path/to/career-ops"
+```powershell
+python run.py --help
+npm run doctor
+npm run verify
 ```
 
-Use the folder that contains `package.json`, `run.py`, `modes/`, and
-`templates/`.
-
-### 3. Run one-command setup
-
-Windows PowerShell:
+Setup:
 
 ```powershell
 .\setup_windows.ps1
 ```
 
-macOS Terminal:
+macOS:
 
 ```bash
 bash setup_macos.sh
 ```
 
-The setup script creates `.venv`, installs Python and Node dependencies,
-installs Playwright Chromium, creates missing local config files from templates,
-and runs basic validation.
-
-### 4. Manual install option
-
-Install Node dependencies:
-
-```bash
-npm install
-npx playwright install chromium
-```
-
-Playwright Chromium is required for PDF generation and reliable job-page
-verification.
-
-### 4. Install Python dependencies
-
-Online install:
-
-```bash
-python -m pip install -r requirements.txt
-python -m pip install -r apps/gmail-agent/requirements.txt
-```
-
-If this package includes a local `wheels/` folder, use the offline install
-instead:
-
-```bash
-python -m pip install --no-index --find-links wheels -r requirements.txt
-```
-
-The CV import flow needs `python-docx` for `.docx` files and `pypdf` for PDF
-files. `python-docx` depends on `lxml`, so offline packages must include wheels
-for the user's OS, CPU, and Python version.
-
-### 5. Create your private setup files
-
-Windows PowerShell:
-
-```powershell
-Copy-Item config\profile.example.yml config\profile.yml
-Copy-Item templates\portals.example.yml portals.yml
-Copy-Item .env.example .env
-Copy-Item modes\_profile.template.md modes\_profile.md
-Copy-Item apps\gmail-agent\.env.example apps\gmail-agent\.env
-```
-
-macOS Terminal:
-
-```bash
-cp config/profile.example.yml config/profile.yml
-cp templates/portals.example.yml portals.yml
-cp .env.example .env
-cp modes/_profile.template.md modes/_profile.md
-cp apps/gmail-agent/.env.example apps/gmail-agent/.env
-```
-
-Then edit:
-
-- `cv.md` - create this with your CV in Markdown
-- `config/profile.yml` - your name, location, target roles, salary range
-- `portals.yml` - companies and search filters
-- `.env` - local API keys if using standalone API scripts
-
-Do not share or commit these files. They are ignored by `.gitignore`.
-
-### 6. Check setup
-
-```bash
-npm run doctor
-```
-
-On a fresh copy, `doctor` will fail until `cv.md`, `config/profile.yml`,
-`portals.yml`, dependencies, and browser binaries are present.
-
-### 7. Start the guided setup
-
-```bash
-python run.py
-```
-
-For command help:
-
-```bash
-python run.py --help
-```
-
-### 8. Start using the tool
-
-Open your AI coding CLI in this folder, then paste a job URL or run:
-
-```text
-/career-ops
-```
-
-The tool can evaluate jobs, generate tailored CV PDFs, scan configured portals,
-and maintain the tracker. It never submits an application for you.
-
-## Maintainer Release Package
-
-Before publishing a public release, audit the full Git history:
+Release-package checks:
 
 ```bash
 npm run release:audit
-```
-
-If the audit reports private paths, credentials, tokens, generated reports, CVs,
-or profile data, do not publish this repository history as-is. Rewrite history
-carefully or create a fresh clean public repository from the safe source files.
-
-Build a reproducible release folder, zip, and checksum:
-
-```bash
 npm run release:package
 ```
 
-The package builder copies only approved files into `final run/`, excludes
-private/runtime files, omits `.git`, cache, reports, output, CV/profile data,
-and Gmail credentials/tokens.
+Legacy command files may exist from the upstream project, but the recommended AI Career Agent workflow is `python run.py`.
 
-> **The system is designed to be customized by Claude itself.** Modes, archetypes, scoring weights, negotiation scripts -- just ask Claude to change them. It reads the same files it uses, so it knows exactly what to edit.
+## Main Capabilities
 
-See [docs/SETUP.md](docs/SETUP.md) for the full setup guide.
+| Capability | Description |
+|---|---|
+| Gmail Job Scan | Reads Gmail job-alert emails through OAuth and extracts job links. |
+| Manual JD Scan | Evaluates pasted job descriptions when scraping is blocked or unavailable. |
+| LinkedIn Session | Uses a local browser profile for authenticated LinkedIn pages. |
+| AI Evaluation | Compares job descriptions against your CV, profile, preferences, and constraints. |
+| Markdown Reports | Saves detailed evaluation reports under `reports/`. |
+| Executive DOCX Reports | Saves CV optimization reports under `data/cv_optimization/reports/`. |
+| Tracker | Maintains `data/applications.md` using the TSV merge flow. |
 
-## Gemini CLI Integration
+## Required Local Files
 
-Career-ops supports [Gemini CLI](https://github.com/google-gemini/gemini-cli) natively — the same way it supports Claude Code and OpenCode. All 15 slash commands are available, using the same `modes/*.md` evaluation logic.
+Create these private files locally:
 
-### Option A — Native Gemini CLI (Recommended)
+- `cv.md` - canonical CV in Markdown.
+- `config/profile.yml` - target roles, location, compensation, preferences, and Gmail scan limits.
+- `modes/_profile.md` - long-form user-specific context.
+- `portals.yml` - portal and company scanning configuration.
+- `.env` - AI provider configuration.
+- `apps/gmail-agent/credentials.json` - Google OAuth desktop-client credentials.
+- `apps/gmail-agent/token.json` - generated after Gmail OAuth authorization.
 
-```bash
-# 1. Install Gemini CLI
-npm install -g @google/gemini-cli
-# or: npx @google/gemini-cli --version
+For AI provider/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
 
-# 2. Authenticate (free — uses your Google account)
-gemini auth
+## AI Provider Setup
 
-# 3. Run in the career-ops directory
-cd career-ops
-gemini
+Configure one provider/API key and three model names in `.env`:
 
-# 4. Use slash commands just like Claude Code
-/career-ops "Senior AI Engineer at Anthropic..."
-/career-ops-evaluate --file ./jds/openai.txt
-/career-ops-scan
-/career-ops-pdf
-/career-ops-tracker
+```env
+AI_PROVIDER_NAME=openrouter
+AI_API_KEY=your-provider-key
+AI_BASE_URL=
+PRIMARY_MODEL=provider/model-one
+FALLBACK_MODEL=provider/model-two
+SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-The `GEMINI.md` file is auto-loaded as context. All 15 commands are defined in `.gemini/commands/*.toml`.
+`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
 
-### Option B — Standalone API Script (No CLI install needed)
+The three model names must belong to the same configured provider/API key.
 
-```bash
-# 1. Get a free API key at https://aistudio.google.com/apikey
-cp .env.example .env
-# Edit .env → set GEMINI_API_KEY=your_key_here
+## Gmail, LinkedIn, and Manual JD Flow
 
-# 2. Install dependencies
-npm install
+Gmail uses OAuth, not your Gmail password. If startup reports Gmail needs attention, run `python run.py` and choose Reconnect Gmail.
 
-# 3. Evaluate a job description
-node gemini-eval.mjs "We are looking for a Senior AI Engineer..."
-node gemini-eval.mjs --file ./jds/my-job.txt
-npm run gemini:eval -- "JD text here"
+LinkedIn uses a local browser profile under `data/gmail-agent/browser_profiles/`. If startup reports LinkedIn login required, run `python run.py` and choose Reconnect LinkedIn.
+
+Use Manual JD Scan when a job page is blocked, expired, behind a challenge, or available only as pasted text.
+
+## Gmail Scan Limits
+
+Scan limits live in `config/profile.yml`:
+
+```yaml
+gmail_scan:
+  max_job_alerts_to_process: 5
+  max_job_links_to_process: 45
 ```
 
-> **Free tier:** Both options work without billing. Native CLI uses Google OAuth; the API script uses `gemini-2.0-flash` (15 RPM, 1M tokens/day free).
+## Outputs
 
-## Usage
+- Markdown evaluation reports: `reports/`
+- Executive DOCX reports: `data/cv_optimization/reports/`
+- Daily summaries: `reports/daily/`
+- Saved job descriptions: `jds/`
+- Runtime Gmail-agent data: `data/gmail-agent/`
 
-Career-ops is a single slash command with multiple modes:
+## Private File Safety
 
-```
-/career-ops                → Show all available commands
-/career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
-/career-ops scan           → Scan portals for new offers
-/career-ops pdf            → Generate ATS-optimized CV
-/career-ops batch          → Batch evaluate multiple offers
-/career-ops tracker        → View application status
-/career-ops apply          → Fill application forms with AI
-/career-ops pipeline       → Process pending URLs
-/career-ops contacto       → LinkedIn outreach message
-/career-ops deep           → Deep company research
-/career-ops training       → Evaluate a course/cert
-/career-ops project        → Evaluate a portfolio project
-```
+Never commit:
 
-Or just paste a job URL or description directly -- career-ops auto-detects it and runs the full pipeline.
+- `.env`
+- `credentials.json`
+- `token.json`
+- `cv.md`
+- `config/profile.yml`
+- `modes/_profile.md`
+- `reports/`
+- `output/`
+- `jds/`
+- runtime data
+- browser sessions
+- backup files
 
-## How It Works
+## Validation
 
-```
-You paste a job URL or description
-        │
-        ▼
-┌──────────────────┐
-│  Archetype       │  Classifies: LLMOps / Agentic / PM / SA / FDE / Transformation
-│  Detection       │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  A-F Evaluation  │  Match, gaps, comp research, STAR stories
-│  (reads cv.md)   │
-└────────┬─────────┘
-         │
-    ┌────┼────┐
-    ▼    ▼    ▼
- Report  PDF  Tracker
-  .md   .pdf   .tsv
+```powershell
+npm run doctor
+npm run verify
+npm run release:audit
+node test-all.mjs --quick
 ```
 
-## Pre-configured Portals
+## Upstream Attribution
 
-The scanner comes with **45+ companies** ready to scan and **19 search queries** across major job boards. Copy `templates/portals.example.yml` to `portals.yml` and add your own:
-
-**AI Labs:** Anthropic, OpenAI, Mistral, Cohere, LangChain, Pinecone
-**Voice AI:** ElevenLabs, PolyAI, Parloa, Hume AI, Deepgram, Vapi, Bland AI
-**AI Platforms:** Retool, Airtable, Vercel, Temporal, Glean, Arize AI
-**Contact Center:** Ada, LivePerson, Sierra, Decagon, Talkdesk, Genesys
-**Enterprise:** Salesforce, Twilio, Gong, Dialpad
-**LLMOps:** Langfuse, Weights & Biases, Lindy, Cognigy, Speechmatics
-**Automation:** n8n, Zapier, Make.com
-**European:** Factorial, Attio, Tinybird, Clarity AI, Travelperk
-
-**Job boards searched:** Ashby, Greenhouse, Lever, Wellfound, Workable, RemoteFront
-
-## Dashboard TUI
-
-The built-in terminal dashboard lets you browse your pipeline visually:
-
-```bash
-cd dashboard
-go build -o career-dashboard .
-./career-dashboard --path ..
-```
-
-Features: 6 filter tabs, 4 sort modes, grouped/flat view, lazy-loaded previews, inline status changes.
-
-## Project Structure
-
-```
-career-ops/
-|-- CLAUDE.md                    # Agent instructions
-|-- cv.md                        # Your CV (create this)
-|-- article-digest.md            # Your proof points (optional)
-|-- config/
-|   `-- profile.example.yml      # Template for your profile
-|-- modes/                       # Skill modes
-|-- templates/                   # CV, portal, and state templates
-|-- batch/                       # Batch evaluation scripts
-|-- apps/
-|   `-- gmail-agent/             # Gmail scanner and daily-run app code
-|-- dashboard/                   # Optional Go TUI pipeline viewer
-|-- data/
-|   `-- gmail-agent/             # Gmail scanner runtime state/cache (gitignored)
-|-- jds/                         # Saved job descriptions (gitignored)
-|-- reports/
-|   `-- daily/                   # Gmail daily summaries (gitignored)
-|-- output/                      # Generated PDFs (gitignored)
-|-- fonts/                       # Space Grotesk + DM Sans
-|-- docs/                        # Setup, customization, architecture
-`-- examples/                    # Sample CV, report, proof points
-```
-
-## Tech Stack
-
-![Claude Code](https://img.shields.io/badge/Claude_Code-000?style=flat&logo=anthropic&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat&logo=playwright&logoColor=white)
-![Go](https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white)
-![Bubble Tea](https://img.shields.io/badge/Bubble_Tea-FF75B5?style=flat&logo=go&logoColor=white)
-
-- **Agent**: Claude Code with custom skills and modes
-- **PDF**: Playwright/Puppeteer + HTML template
-- **Scanner**: Playwright + Greenhouse API + WebSearch
-- **Dashboard**: Go + Bubble Tea + Lipgloss (Catppuccin Mocha theme)
-- **Data**: Markdown tables + YAML config + TSV batch files
-
-## Also Open Source
-
-- **[cv-santiago](https://github.com/santifer/cv-santiago)** -- The portfolio website (santifer.io) with AI chatbot, LLMOps dashboard, and case studies. If you need a portfolio to showcase alongside your job search, fork it and make it yours.
-
-## About the Author
-
-I'm Santiago -- Head of Applied AI, former founder (built and sold a business that still runs with my name on it). I built career-ops to manage my own job search. It worked: I used it to land my current role.
-
-My portfolio and other open source projects → [santifer.io](https://santifer.io)
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=santifer%2Fcareer-ops&type=timeline&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=santifer/career-ops&type=timeline&legend=top-left" />
- </picture>
-</a>
+AI Career Agent was originally adapted from the open-source Career-Ops project and has been significantly modified.
 
 ## Disclaimer
 
-**career-ops is a local, open-source tool — NOT a hosted service.** By using this software, you acknowledge:
+AI Career Agent is a local tool. You are responsible for reviewing generated reports, CV changes, and application answers before using them, and for complying with third-party site terms.
 
-1. **You control your data.** Your CV, contact info, and personal data stay on your machine and are sent directly to the AI provider you choose (Anthropic, OpenAI, etc.). We do not collect, store, or have access to any of your data.
-2. **You control the AI.** The default prompts instruct the AI not to auto-submit applications, but AI models can behave unpredictably. If you modify the prompts or use different models, you do so at your own risk. **Always review AI-generated content for accuracy before submitting.**
-3. **You comply with third-party ToS.** You must use this tool in accordance with the Terms of Service of the career portals you interact with (Greenhouse, Lever, Workday, LinkedIn, etc.). Do not use this tool to spam employers or overwhelm ATS systems.
-4. **No guarantees.** Evaluations are recommendations, not truth. AI models may hallucinate skills or experience. The authors are not liable for employment outcomes, rejected applications, account restrictions, or any other consequences.
-
-See [LEGAL_DISCLAIMER.md](LEGAL_DISCLAIMER.md) for full details. This software is provided under the [MIT License](LICENSE) "as is", without warranty of any kind.
-
-## Contributors
-
-<a href="https://github.com/santifer/career-ops/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=santifer/career-ops" />
-</a>
-
-Got hired using career-ops? [Share your story!](https://github.com/santifer/career-ops/issues/new?template=i-got-hired.yml)
-
-## License
-
-MIT
-
-## Let's Connect
-
-[![Website](https://img.shields.io/badge/santifer.io-000?style=for-the-badge&logo=safari&logoColor=white)](https://santifer.io)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/santifer)
-[![X](https://img.shields.io/badge/X-000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/santifer)
-[![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/8pRpHETxa4)
-[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:hi@santifer.io)
+See [LEGAL_DISCLAIMER.md](LEGAL_DISCLAIMER.md) for details.
