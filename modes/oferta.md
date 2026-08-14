@@ -447,21 +447,22 @@ Rules:
 - If DOCX generation fails, record the error, continue the remaining pipeline
   for that job, and report the DOCX as pending.
 
-### 3. Register in tracker
+### 3. Tracker registration
 
-**ALWAYS** register in `data/applications.md`:
+Do not include tracker rows, "Action Taken" sections, shell commands, saved-file
+claims, or `data/applications.md` updates in the report markdown. Runtime scripts
+own file persistence and tracker registration after the real report path is
+known.
 
-- Next sequential number
+The evaluator runtime writes one TSV addition to `batch/tracker-additions/` with:
+
+- Next sequential report number
 - Current date
 - Company
 - Role
 - Score: average match score (1-5)
 - Status: `Evaluated`
-- PDF: ❌ (or ✅ if the auto-pipeline generated a PDF)
-- Report: relative link to the `.md` report (e.g., `[001](reports/001-company-2026-01-01.md)`)
+- PDF: not generated
+- Report: relative link to the actual saved `.md` report
 
-**Tracker format:**
-
-```markdown
-| # | Date | Company | Role | Score | Status | PDF | Report |
-```
+`merge-tracker.mjs` merges those TSV additions into `data/applications.md`.

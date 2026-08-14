@@ -7,6 +7,7 @@ from career_ops_runner import (
     generate_single_executive_report,
     load_processed_state,
     run_career_ops_evaluation,
+    run_tracker_merge,
     save_current_run_reports,
     save_processed_state,
 )
@@ -147,6 +148,8 @@ def run_existing_pipeline(file_path):
     state["evaluated_jd_files"] = sorted(evaluated_files)
     save_processed_state(state)
     save_current_run_reports(report_paths)
+    if report_paths:
+        run_tracker_merge()
 
 
 def main():

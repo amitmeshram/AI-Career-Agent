@@ -303,6 +303,35 @@ def run_career_ops_evaluation(jd_file):
     }
 
 
+def run_tracker_merge():
+    command = [
+        "node",
+        "merge-tracker.mjs",
+    ]
+
+    result = subprocess.run(
+        command,
+        cwd=str(CAREER_OPS_ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace"
+    )
+
+    if result.stdout:
+        print(result.stdout)
+
+    if result.stderr:
+        print("TRACKER MERGE ERROR OUTPUT:")
+        print(result.stderr)
+
+    if result.returncode != 0:
+        print("Tracker merge failed.")
+    else:
+        print("Tracker merge completed.")
+
+    return result.returncode
+
 def generate_single_executive_report(report_path, cv_path=None, force=False):
     report_path = Path(report_path)
 
@@ -431,6 +460,8 @@ def evaluate_all_jd_files(jd_files=None):
     print(f"New JD files evaluated: {len(results)}")
     print(f"Reports saved in: {CAREER_OPS_REPORTS}")
     save_current_run_reports(current_run_reports)
+    if current_run_reports:
+        run_tracker_merge()
     return results
 
 if __name__ == "__main__":
