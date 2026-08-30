@@ -20,6 +20,55 @@ function Require-Command {
     }
 }
 
+function Refresh-Path {
+    $machinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+    $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = "$machinePath;$userPath"
+}
+
+function Install-WithWinget {
+    param(
+        [string]$DisplayName,
+        [string]$PackageId,
+        [string]$ManualUrl
+    )
+
+    if (-not (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+        throw "winget was not found, so $DisplayName cannot be installed automatically. Install it from $ManualUrl, close and reopen PowerShell, then re-run this script."
+    }
+
+    Write-Host "$DisplayName was not found on this system."
+    Write-Host "Installing may show a Windows permission prompt."
+    $Response = Read-Host "Install $DisplayName now via winget? [Y/N]"
+    if ($Response -notmatch '^[Yy]') {
+        throw "$DisplayName is required. Install it from $ManualUrl, close and reopen PowerShell, then re-run this script."
+    }
+
+    Write-Step "Installing $DisplayName via winget"
+    winget install --id $PackageId --source winget --accept-package-agreements --accept-source-agreements
+    Assert-LastCommand "Installing $DisplayName via winget"
+    Refresh-Path
+}
+
+function Ensure-Node {
+    if (-not (Get-Command "node" -ErrorAction SilentlyContinue)) {
+        Install-WithWinget "Node.js 18 or newer" "OpenJS.NodeJS.LTS" "https://nodejs.org/"
+    }
+    Require-Command "node" "Install Node.js 18 or newer from https://nodejs.org/ or run: winget install OpenJS.NodeJS.LTS"
+
+    if (-not (Get-Command "npm" -ErrorAction SilentlyContinue)) {
+        Install-WithWinget "npm with Node.js 18 or newer" "OpenJS.NodeJS.LTS" "https://nodejs.org/"
+    }
+    Require-Command "npm" "Install npm with Node.js 18 or newer from https://nodejs.org/ or run: winget install OpenJS.NodeJS.LTS"
+}
+
+function Ensure-Python {
+    if (-not (Get-Command "python" -ErrorAction SilentlyContinue)) {
+        Install-WithWinget "Python 3.10 or newer" "Python.Python.3.12" "https://www.python.org/downloads/"
+    }
+    Require-Command "python" "Install Python 3.10 or newer from https://www.python.org/downloads/ or run: winget install Python.Python.3.12"
+}
+
 function Copy-IfMissing {
     param(
         [string]$Source,
@@ -42,9 +91,8 @@ $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Root
 
 Write-Step "Checking prerequisites"
-Require-Command "node" "Install Node.js 18 or newer from https://nodejs.org/"
-Require-Command "npm" "Install npm with Node.js 18 or newer from https://nodejs.org/"
-Require-Command "python" "Install Python 3.10 or newer from https://www.python.org/downloads/"
+Ensure-Node
+Ensure-Python
 
 $NodeVersion = [version]((node --version).TrimStart("v"))
 Assert-LastCommand "Checking Node.js version"
@@ -63,11 +111,22 @@ Write-Host "Node.js $NodeVersion"
 Write-Host "Python $PythonVersion"
 
 Write-Step "Creating virtual environment"
-if (-not (Test-Path ".venv\Scripts\python.exe")) {
+$VenvPython = Join-Path $Root ".venv\Scripts\python.exe"
+$VenvValid = $false
+if (Test-Path $VenvPython) {
+    & $VenvPython --version *> $null
+    if ($LASTEXITCODE -eq 0) {
+        $VenvValid = $true
+    }
+}
+if (-not $VenvValid) {
+    if (Test-Path ".venv") {
+        Write-Host "Existing virtual environment is broken or copied from another machine. Rebuilding it..."
+        Remove-Item -Recurse -Force ".venv"
+    }
     python -m venv .venv
     Assert-LastCommand "Creating virtual environment"
 }
-$VenvPython = Join-Path $Root ".venv\Scripts\python.exe"
 & $VenvPython -m pip --version *> $null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Virtual environment exists but pip is missing. Repairing with ensurepip..."

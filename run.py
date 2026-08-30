@@ -1,6 +1,7 @@
 import json
 import platform
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -53,18 +54,27 @@ def prompt_yes_no(prompt, default=False, input_func=input):
     return answer in {"y", "yes"}
 
 
+def venv_is_functional(venv_python, run_func=subprocess.run):
+    try:
+        result = run_func([str(venv_python), "--version"], capture_output=True, timeout=10)
+        return getattr(result, "returncode", 1) == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
 def ensure_venv(project_root, input_func=input, run_func=subprocess.run):
     project_root = Path(project_root)
     venv_dir = project_root / ".venv"
     venv_python = get_venv_python_path(project_root)
 
-    if venv_python.exists():
+    if venv_python.exists() and venv_is_functional(venv_python, run_func=run_func):
         return venv_python
 
     if venv_dir.exists():
-        return Path(sys.executable)
+        print("Existing .venv looks broken or was copied from another machine. Removing it...")
+        shutil.rmtree(venv_dir)
 
-    print("No .venv was found for this project.")
+    print("No functional .venv was found for this project.")
     if prompt_yes_no("Create one now with python -m venv .venv?", default=True, input_func=input_func):
         result = run_func([sys.executable, "-m", "venv", ".venv"], cwd=str(project_root))
         if getattr(result, "returncode", 0) != 0:
@@ -1135,7 +1145,8 @@ def main(argv=None, input_func=input):
         print("SECOND_FALLBACK_MODEL=")
         print("")
         print("Then run:")
-        print(r".\.venv\Scripts\python.exe run.py")
+        for command in command_guidance():
+            print(command)
         return 1
 
     print("First-time setup already completed. Starting AI Career Agent...")
