@@ -19,6 +19,51 @@ require_command() {
   fi
 }
 
+install_with_brew() {
+  local display_name="$1"
+  local package_name="$2"
+  local manual_url="$3"
+
+  printf '%s was not found on this system.\n' "$display_name"
+  if ! command -v brew >/dev/null 2>&1; then
+    printf 'Homebrew was not found, so %s cannot be installed automatically.\n' "$display_name" >&2
+    printf 'Install it from %s, then re-run: bash setup_macos.sh\n' "$manual_url" >&2
+    exit 1
+  fi
+
+  read -r -p "Install $display_name now via Homebrew? [Y/N] " response
+  case "$response" in
+    [Yy]*)
+      step "Installing $display_name via Homebrew"
+      brew install "$package_name"
+      hash -r
+      ;;
+    *)
+      printf '%s is required. Install it from %s, then re-run: bash setup_macos.sh\n' "$display_name" "$manual_url" >&2
+      exit 1
+      ;;
+  esac
+}
+
+ensure_node() {
+  if ! command -v node >/dev/null 2>&1; then
+    install_with_brew "Node.js 18 or newer" "node" "https://nodejs.org/"
+  fi
+  require_command node "Install Node.js 18 or newer from https://nodejs.org/ or run: brew install node"
+
+  if ! command -v npm >/dev/null 2>&1; then
+    install_with_brew "npm with Node.js 18 or newer" "node" "https://nodejs.org/"
+  fi
+  require_command npm "Install npm with Node.js 18 or newer from https://nodejs.org/ or run: brew install node"
+}
+
+ensure_python() {
+  if ! command -v python3 >/dev/null 2>&1; then
+    install_with_brew "Python 3.10 or newer" "python" "https://www.python.org/downloads/"
+  fi
+  require_command python3 "Install Python 3.10 or newer from https://www.python.org/downloads/ or run: brew install python"
+}
+
 copy_if_missing() {
   local source="$1"
   local destination="$2"
@@ -31,9 +76,8 @@ copy_if_missing() {
 cd "$(dirname "$0")"
 
 step "Checking prerequisites"
-require_command node "Install Node.js 18 or newer from https://nodejs.org/"
-require_command npm "Install npm with Node.js 18 or newer from https://nodejs.org/"
-require_command python3 "Install Python 3.10 or newer from https://www.python.org/downloads/ or Homebrew."
+ensure_node
+ensure_python
 
 node_major="$(node -p "Number(process.versions.node.split('.')[0])")"
 if [[ "$node_major" -lt 18 ]]; then

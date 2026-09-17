@@ -191,6 +191,24 @@ def check_ai_model_connection():
         }
 
     values = read_env_file(env_path)
+    provider_aliases = {
+        "claude": "anthropic",
+        "moonshot": "kimi",
+        "zhipu": "glm",
+        "bigmodel": "glm",
+    }
+    provider = values.get("AI_PROVIDER_NAME", "").strip().lower()
+    provider = provider_aliases.get(provider, provider)
+    supported_providers = {
+        "openai",
+        "openrouter",
+        "anthropic",
+        "gemini",
+        "deepseek",
+        "kimi",
+        "glm",
+        "custom",
+    }
     api_key_names = [
         "AI_API_KEY",
         "OPENROUTER_API_KEY",
@@ -200,6 +218,11 @@ def check_ai_model_connection():
         "GEMINI_API_KEY",
         "GOOGLE_API_KEY",
         "GOOGLE_GENERATIVE_AI_API_KEY",
+        "DEEPSEEK_API_KEY",
+        "KIMI_API_KEY",
+        "MOONSHOT_API_KEY",
+        "GLM_API_KEY",
+        "ZHIPU_API_KEY",
     ]
     has_api_key = any(values.get(name, "") for name in api_key_names)
     models = [
@@ -214,10 +237,20 @@ def check_ai_model_connection():
             "message": "No AI provider API key is configured.",
         }
 
-    if not values.get("AI_PROVIDER_NAME", "") and values.get("AI_API_KEY", ""):
+    if not provider and values.get("AI_API_KEY", ""):
         return {
             "status": "MISSING",
             "message": "AI_PROVIDER_NAME is required when using AI_API_KEY.",
+        }
+
+    if provider and provider not in supported_providers:
+        supported = ", ".join(sorted(supported_providers))
+        return {
+            "status": "MISSING",
+            "message": (
+                f"AI_PROVIDER_NAME={provider} is not supported by the evaluator workflow. "
+                f"Use one of: {supported}. Aliases are accepted for claude, moonshot, zhipu, and bigmodel."
+            ),
         }
 
     if not all(model for model in models):

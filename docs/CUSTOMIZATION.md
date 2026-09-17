@@ -33,7 +33,7 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, not API key name.
+`AI_PROVIDER_NAME` means provider name, not API key name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`.
 
 ## Rules
 

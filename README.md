@@ -35,6 +35,15 @@ npm run verify
 Setup:
 
 ```powershell
+.\setup_windows.cmd
+```
+
+The Windows setup wrapper runs the PowerShell setup script with a temporary execution-policy bypass for that one run only. If Node.js or Python is missing, the setup script can ask before installing them with `winget`.
+
+Manual Windows fallback:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\setup_windows.ps1
 ```
 
@@ -43,6 +52,8 @@ macOS:
 ```bash
 bash setup_macos.sh
 ```
+
+On macOS, if Node.js or Python is missing and Homebrew is installed, the setup script can ask before installing the missing prerequisite with `brew`.
 
 Release-package checks:
 
@@ -77,7 +88,7 @@ Create these private files locally:
 - `apps/gmail-agent/credentials.json` - Google OAuth desktop-client credentials.
 - `apps/gmail-agent/token.json` - generated after Gmail OAuth authorization.
 
-For AI provider/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+For AI provider/API key setup and Gmail OAuth screenshots, see [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## AI Provider Setup
 
@@ -92,7 +103,7 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+`AI_PROVIDER_NAME` means provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It does not mean API key name.
 
 The three model names must belong to the same configured provider/API key.
 

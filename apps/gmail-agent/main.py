@@ -1,5 +1,3 @@
-import msvcrt
-
 from gmail_reader import get_recent_job_alert_candidates
 from jd_scraper import scrape_job_description, save_job_result
 from link_extractor import normalize_url
@@ -10,7 +8,9 @@ from career_ops_runner import (
 from report_builder import main as build_daily_report, save_current_run_jobs
 import json
 import os
+import platform
 import re
+import sys
 from paths import CAREER_OPS_ROOT, SCRAPED_JOBS_FILE
 from email_sender import send_email_summary
 from startup_health_check import (
@@ -23,6 +23,46 @@ from startup_health_check import (
 DEFAULT_MAX_JOB_ALERTS_TO_PROCESS = 5
 DEFAULT_MAX_JOB_LINKS_TO_PROCESS = 50
 PROFILE_FILE = CAREER_OPS_ROOT / "config" / "profile.yml"
+
+if platform.system() == "Windows":
+    import msvcrt
+
+    def read_key():
+        key = msvcrt.getwch()
+        if key in ("\x00", "\xe0"):
+            arrow_key = msvcrt.getwch()
+            return {
+                "H": "UP",
+                "P": "DOWN",
+            }.get(arrow_key)
+        if key == "\r":
+            return "ENTER"
+        return None
+else:
+    import termios
+    import tty
+
+    def read_key():
+        if not sys.stdin.isatty():
+            value = input("> ").strip()
+            return "ENTER" if value == "" else value
+
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            key = sys.stdin.read(1)
+            if key == "\x1b":
+                sequence = sys.stdin.read(2)
+                return {
+                    "[A": "UP",
+                    "[B": "DOWN",
+                }.get(sequence)
+            if key in ("\r", "\n"):
+                return "ENTER"
+            return None
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 
 def parse_positive_int(value, default_value):
@@ -317,16 +357,18 @@ def get_menu_selection(health):
 
     while True:
         display_startup_menu(selected_index, health, options)
-        key = msvcrt.getwch()
+        key = read_key()
 
-        if key in ("\x00", "\xe0"):
-            arrow_key = msvcrt.getwch()
-            if arrow_key == "H":
-                selected_index = (selected_index - 1) % len(options)
-            elif arrow_key == "P":
-                selected_index = (selected_index + 1) % len(options)
-        elif key == "\r":
+        if key == "UP":
+            selected_index = (selected_index - 1) % len(options)
+        elif key == "DOWN":
+            selected_index = (selected_index + 1) % len(options)
+        elif key == "ENTER":
             return selected_index + 1
+        elif isinstance(key, str) and key.isdigit():
+            selected_number = int(key)
+            if 1 <= selected_number <= len(options):
+                return selected_number
 
 
 def run_manual_jd_scan():

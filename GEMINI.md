@@ -17,7 +17,7 @@ npm run release:package
 
 Legacy command files may exist from the upstream project, but the recommended AI Career Agent workflow is `python run.py`.
 
-For AI model/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+For AI model/API key setup and Gmail OAuth screenshots, see [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## AI Provider Setup
 
@@ -30,7 +30,7 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+`AI_PROVIDER_NAME` means provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It does not mean API key name.
 
 ## Safety Rules
 

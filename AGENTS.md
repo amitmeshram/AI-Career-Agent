@@ -15,4 +15,4 @@ Key rules:
 - Never commit `.env`, credentials, tokens, CV/profile files, reports, output, runtime data, browser sessions, or backup files.
 - Use scoped `git add <specific-files>` only. Never use `git add .` in dirty repos.
 
-For AI provider and Gmail OAuth setup, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+For AI provider and Gmail OAuth setup, see [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>).

@@ -20,6 +20,8 @@ batch/tracker-additions/**/*.tsv
 !batch/tracker-additions/.gitkeep
 jds/*
 !jds/.gitkeep
+interview-prep/*
+!interview-prep/.gitkeep
 
 # User config and customization (never auto-updated)
 config/profile.yml

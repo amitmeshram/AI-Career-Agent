@@ -10,11 +10,35 @@ Run these commands from the folder that contains `package.json` and `run.py`.
 - Playwright Chromium
 - Optional: Go 1.21+ for the dashboard
 
+On Windows, first-time users who do not already have Node.js or Python can let setup ask before installing them with `winget`. Manual install commands:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+winget install Python.Python.3.12
+```
+
+On macOS, first-time users who have Homebrew can let setup ask before installing missing prerequisites with `brew`. Manual install commands:
+
+```bash
+brew install node python
+```
+
+Close and reopen the terminal after manually installing Node.js or Python if the commands are not available immediately.
+
 ## 2. Run One-Command Setup
 
 Windows:
 
 ```powershell
+.\setup_windows.cmd
+```
+
+The Windows setup wrapper runs `setup_windows.ps1` with a temporary execution-policy bypass for that one run only. It does not permanently change the system policy.
+
+Manual Windows fallback:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\setup_windows.ps1
 ```
 
@@ -60,9 +84,9 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+`AI_PROVIDER_NAME` means provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It does not mean API key name.
 
-For provider examples and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+For provider examples and Gmail OAuth screenshots, see [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## 6. Gmail OAuth
 

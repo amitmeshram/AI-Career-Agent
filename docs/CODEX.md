@@ -13,7 +13,7 @@ python -m pip install -r requirements.txt
 python -m pip install -r apps/gmail-agent/requirements.txt
 ```
 
-For provider/API key examples and Gmail OAuth setup, see [AI Model Connection Guidebook.docx](<../AI Model Connection Guidebook.docx>).
+For provider/API key examples and Gmail OAuth setup, see [AI Career Agent Setup Connection Guidebook PDF](<../AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## Recommended Commands
 

@@ -23,9 +23,9 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+`AI_PROVIDER_NAME` means provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It does not mean API key name.
 
-For screenshots and provider examples, see [AI Model Connection Guidebook.docx](<../../AI Model Connection Guidebook.docx>).
+For screenshots and provider examples, see [AI Career Agent Setup Connection Guidebook PDF](<../../AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## Gmail OAuth
 

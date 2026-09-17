@@ -17,8 +17,58 @@ from link_extractor import normalize_url
 JD_OUTPUT_FOLDER = JD_FILES_DIR
 CAREER_OPS_REPORTS = CAREER_OPS_ROOT / "reports"
 PROCESSED_STATE_FILE = PROCESSED_JOBS_FILE
+EVALUATION_FAILURES_DIR = CAREER_OPS_ROOT / "data" / "gmail-agent" / "evaluation_failures"
+MAX_EVALUATION_FAILURES = 3
 
 GEMINI_MODEL = "gemini-2.5-flash"
+PROVIDER_ALIASES = {
+    "claude": "anthropic",
+    "moonshot": "kimi",
+    "zhipu": "glm",
+    "bigmodel": "glm",
+}
+OPENROUTER_EVALUATOR_PROVIDERS = {
+    "openrouter",
+    "openai",
+    "custom",
+    "anthropic",
+    "deepseek",
+    "kimi",
+    "glm",
+}
+SUPPORTED_EVALUATOR_PROVIDERS = OPENROUTER_EVALUATOR_PROVIDERS | {"gemini"}
+
+
+def read_env_file(path):
+    values = {}
+    if not Path(path).exists():
+        return values
+
+    for line in Path(path).read_text(encoding="utf-8", errors="ignore").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        values[key.strip()] = value.strip().strip("\"'")
+    return values
+
+
+def configured_ai_provider():
+    values = read_env_file(CAREER_OPS_ROOT / ".env")
+    provider = str(values.get("AI_PROVIDER_NAME") or "").strip().lower()
+    return PROVIDER_ALIASES.get(provider, provider)
+
+
+def evaluation_command_for_provider(provider, jd_file):
+    normalized_provider = PROVIDER_ALIASES.get(str(provider or "").strip().lower(), str(provider or "").strip().lower())
+
+    if normalized_provider in OPENROUTER_EVALUATOR_PROVIDERS:
+        return ["node", "openrouter-eval.mjs", "--file", str(jd_file)]
+
+    if normalized_provider == "gemini":
+        return ["node", "gemini-eval.mjs", "--file", str(jd_file)]
+
+    return None
 
 def save_current_run_reports(report_paths):
     CURRENT_RUN_REPORTS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -54,6 +104,47 @@ def clean_filename(text):
     text = re.sub(r"[^a-zA-Z0-9]+", "_", text)
     text = text.strip("_")
     return text[:80]
+
+
+def text_tail(value, limit=2000):
+    text = value or ""
+    return text[-limit:]
+
+
+def record_evaluation_failure(state, jd_file, result, report_path=""):
+    failures = state.setdefault("evaluation_failures", {})
+    entry = failures.get(jd_file.name, {})
+    failure_count = int(entry.get("count", 0)) + 1
+
+    failures[jd_file.name] = {
+        "count": failure_count,
+        "last_return_code": result.get("return_code"),
+        "last_report_path": report_path,
+        "last_stdout_tail": text_tail(result.get("stdout", "")),
+        "last_stderr_tail": text_tail(result.get("stderr", "")),
+    }
+
+    if failure_count >= MAX_EVALUATION_FAILURES:
+        EVALUATION_FAILURES_DIR.mkdir(parents=True, exist_ok=True)
+        failure_path = EVALUATION_FAILURES_DIR / f"{clean_filename(jd_file.stem)}.json"
+        failure_path.write_text(
+            json.dumps(
+                {
+                    "jd_file": jd_file.name,
+                    "failure_count": failure_count,
+                    "reason": "No valid evaluation report was produced after repeated attempts.",
+                    "return_code": result.get("return_code"),
+                    "report_path": report_path,
+                    "stdout_tail": text_tail(result.get("stdout", "")),
+                    "stderr_tail": text_tail(result.get("stderr", "")),
+                },
+                indent=4,
+            ),
+            encoding="utf-8",
+        )
+        return failure_count, failure_path
+
+    return failure_count, None
 
 
 def load_scraped_jobs():
@@ -273,12 +364,24 @@ def run_career_ops_evaluation(jd_file):
     print("\n--------------------------------")
     print(f"Evaluating JD file: {jd_file.name}")
 
-    command = [
-        "node",
-        "openrouter-eval.mjs",
-        "--file",
-        str(jd_file)
-    ]
+    provider = configured_ai_provider()
+    command = evaluation_command_for_provider(provider, jd_file)
+
+    if not command:
+        supported = ", ".join(sorted(SUPPORTED_EVALUATOR_PROVIDERS))
+        message = (
+            f"AI_PROVIDER_NAME={provider or '(missing)'} is not supported by the current evaluator workflow.\n"
+            f"Supported providers: {supported}.\n"
+            "Aliases are accepted for claude, moonshot, zhipu, and bigmodel."
+        )
+        print("ERROR OUTPUT:")
+        print(message)
+        return {
+            "jd_file": str(jd_file),
+            "return_code": 1,
+            "stdout": "",
+            "stderr": message
+        }
 
     result = subprocess.run(
         command,
@@ -341,13 +444,24 @@ def generate_single_executive_report(report_path, cv_path=None, force=False):
     if cv_path is None:
         cv_path = CAREER_OPS_ROOT / "cv.md"
 
+    output_path = (
+        CAREER_OPS_ROOT
+        / "data"
+        / "cv_optimization"
+        / "reports"
+        / f"{report_path.stem}-executive-report.docx"
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     command = [
         sys.executable,
         "tools/generate_executive_report_from_evaluation.py",
         "--report",
         str(report_path),
         "--cv",
-        str(cv_path)
+        str(cv_path),
+        "--output",
+        str(output_path)
     ]
 
     if force:
@@ -434,15 +548,34 @@ def evaluate_all_jd_files(jd_files=None):
             results.append(result)
             report_path = extract_saved_report_path(result.get("stdout", ""))
 
-            if report_path:
-                current_run_reports.append(report_path)
+            if result.get("return_code") != 0 or not report_path:
+                print(f"Evaluation did not produce a valid report for: {jd_file.name}")
+                failure_count, failure_path = record_evaluation_failure(
+                    state,
+                    jd_file,
+                    result,
+                    report_path,
+                )
+                print(
+                    f"Evaluation failure count for {jd_file.name}: "
+                    f"{failure_count}/{MAX_EVALUATION_FAILURES}"
+                )
+                if failure_path:
+                    rejected_files.add(jd_file.name)
+                    state["rejected_jd_files"] = list(rejected_files)
+                    print(f"Evaluation failure logged for manual review: {failure_path}")
+                save_processed_state(state)
+                continue
 
-                try:
-                    generate_single_executive_report(report_path)
-                except Exception as e:
-                    print(f"Executive DOCX generation failed for: {report_path}")
-                    print(str(e))
+            current_run_reports.append(report_path)
 
+            try:
+                generate_single_executive_report(report_path)
+            except Exception as e:
+                print(f"Executive DOCX generation failed for: {report_path}")
+                print(str(e))
+
+            state.setdefault("evaluation_failures", {}).pop(jd_file.name, None)
             evaluated_files.add(jd_file.name)
 
             state["evaluated_jd_files"] = list(evaluated_files)

@@ -7,7 +7,7 @@ AI Career Agent is a local customized job-search automation tool. Support should
 1. Read [README.md](README.md).
 2. Follow [SETUP.md](SETUP.md).
 3. Review [RUNBOOK.md](RUNBOOK.md) for daily operation.
-4. Use [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>) for AI provider and Gmail OAuth setup.
+4. Use [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>) for AI provider and Gmail OAuth setup.
 
 ## Common Commands
 

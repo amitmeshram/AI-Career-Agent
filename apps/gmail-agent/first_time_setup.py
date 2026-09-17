@@ -39,6 +39,11 @@ SECRET_ENV_FIELDS = {
     "GEMINI_API_KEY",
     "ANTHROPIC_API_KEY",
     "CLAUDE_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "KIMI_API_KEY",
+    "MOONSHOT_API_KEY",
+    "GLM_API_KEY",
+    "ZHIPU_API_KEY",
 }
 
 LEGACY_AI_KEY_PROVIDERS = (
@@ -47,6 +52,11 @@ LEGACY_AI_KEY_PROVIDERS = (
     ("ANTHROPIC_API_KEY", "anthropic"),
     ("CLAUDE_API_KEY", "anthropic"),
     ("GEMINI_API_KEY", "gemini"),
+    ("DEEPSEEK_API_KEY", "deepseek"),
+    ("KIMI_API_KEY", "kimi"),
+    ("MOONSHOT_API_KEY", "kimi"),
+    ("GLM_API_KEY", "glm"),
+    ("ZHIPU_API_KEY", "glm"),
 )
 
 LEGACY_AI_ENV_FIELDS = {
@@ -55,6 +65,11 @@ LEGACY_AI_ENV_FIELDS = {
     "ANTHROPIC_API_KEY",
     "CLAUDE_API_KEY",
     "GEMINI_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "KIMI_API_KEY",
+    "MOONSHOT_API_KEY",
+    "GLM_API_KEY",
+    "ZHIPU_API_KEY",
     "SECOND_FALLBACK",
     "SECONDARY_FALLBACK_MODEL",
 }
@@ -73,7 +88,16 @@ PROVIDER_ALIASES = {
     "4": "openrouter",
     "open router": "openrouter",
     "openrouter": "openrouter",
-    "5": "custom",
+    "5": "deepseek",
+    "deepseek": "deepseek",
+    "6": "kimi",
+    "kimi": "kimi",
+    "moonshot": "kimi",
+    "7": "glm",
+    "glm": "glm",
+    "zhipu": "glm",
+    "bigmodel": "glm",
+    "8": "custom",
     "custom": "custom",
 }
 
@@ -340,13 +364,16 @@ def prompt_env_setup(paths, input_func=input):
     print("2. Anthropic / Claude")
     print("3. Gemini")
     print("4. OpenRouter")
-    print("5. Custom OpenAI-compatible provider")
+    print("5. DeepSeek")
+    print("6. Kimi / Moonshot")
+    print("7. GLM / Zhipu")
+    print("8. Custom OpenAI-compatible provider")
     print_hint("Type one option number, for example: 1.")
     current_provider = defaults["AI_PROVIDER_NAME"]
     provider_prompt = f"Provider [{current_provider}]: " if current_provider else "Provider: "
     provider = normalize_provider_name(input_func(provider_prompt).strip() or current_provider)
-    while provider not in {"openai", "anthropic", "gemini", "openrouter", "custom"}:
-        print("Please choose 1, 2, 3, 4, or 5.")
+    while provider not in {"openai", "anthropic", "gemini", "openrouter", "deepseek", "kimi", "glm", "custom"}:
+        print("Please choose 1, 2, 3, 4, 5, 6, 7, or 8.")
         provider = normalize_provider_name(input_func("Provider: ").strip())
     answers["AI_PROVIDER_NAME"] = provider
 

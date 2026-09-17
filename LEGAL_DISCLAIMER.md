@@ -20,7 +20,7 @@ AI Career Agent must stop before any final Submit, Send, Apply, or equivalent ac
 
 The tool may send job descriptions, CV content, profile details, or related context to the AI provider configured in `.env`. Review your provider's privacy and retention terms before use.
 
-`AI_PROVIDER_NAME` identifies the provider, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It is not an API key name.
+`AI_PROVIDER_NAME` identifies the provider. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It is not an API key name.
 
 ## Third-Party Sites
 

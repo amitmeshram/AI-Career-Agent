@@ -7,7 +7,7 @@ Use the current English documentation instead:
 - [README.md](README.md)
 - [SETUP.md](SETUP.md)
 - [RUNBOOK.md](RUNBOOK.md)
-- [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>)
+- [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>)
 
 Recommended workflow:
 

@@ -12,7 +12,7 @@ AI Career Agent uses Gmail OAuth. It should never ask for or store your Gmail pa
 
 ## AI Provider Keys
 
-Store provider keys only in local `.env` files. `AI_PROVIDER_NAME` is the provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`; it is not the API key name.
+Store provider keys only in local `.env` files. `AI_PROVIDER_NAME` is the provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It is not the API key name.
 
 ## Browser Sessions
 

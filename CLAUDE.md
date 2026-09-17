@@ -23,7 +23,7 @@ npm run release:package
 
 Legacy command files may exist from the upstream project. Do not present them as the recommended workflow. The recommended workflow is `python run.py`.
 
-For AI model/API key setup and Gmail OAuth screenshots, see [AI Model Connection Guidebook.docx](<AI Model Connection Guidebook.docx>).
+For AI model/API key setup and Gmail OAuth screenshots, see [AI Career Agent Setup Connection Guidebook PDF](<AI_Career_Agent_Setup_Connection_Guidebook.pdf>).
 
 ## Data Contract
 
@@ -89,7 +89,7 @@ FALLBACK_MODEL=provider/model-two
 SECOND_FALLBACK_MODEL=provider/model-three
 ```
 
-`AI_PROVIDER_NAME` means provider name, for example `openrouter`, `openai`, `gemini`, `kimi`, `glm`, or `custom`. It does not mean API key name.
+`AI_PROVIDER_NAME` means provider name. Supported values are `openrouter`, `openai`, `anthropic`, `claude`, `gemini`, `deepseek`, `kimi`, `moonshot`, `glm`, `zhipu`, or `custom`. It does not mean API key name.
 
 Reject malformed AI model output. If model output contains fake tool-call JSON such as `{"tool":"read"}`, raw prompt chatter, invalid report structure, or missing required report sections, do not save it as a valid report. Rerun or ask for manual review.
 
