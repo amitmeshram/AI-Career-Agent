@@ -31,7 +31,7 @@
   "homepage": "https://santifer.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/santifer/career-ops"
+    "url": "https://github.com/amitmeshram/AI-Career-Agent"
   },
   "license": "MIT",
   "dependencies": {
