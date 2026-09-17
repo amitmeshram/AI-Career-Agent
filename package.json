@@ -36,7 +36,7 @@
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "dotenv": "^16.6.1",
+    "dotenv": "^17.4.2",
     "js-yaml": "^4.1.1",
     "openai": "^6.37.0",
     "playwright": "^1.58.1"
